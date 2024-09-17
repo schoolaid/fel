@@ -1,0 +1,23 @@
+{
+    "name": "schoolaid/fel",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Schoolaid\\Fel\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Uriel Ortiz",
+            "email": "uortiz@mednet.ucla.edu"
+        }
+    ],
+    "require-dev": {
+        "pestphp/pest": "^3.0"
+    },
+    "config": {
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    }
+}
