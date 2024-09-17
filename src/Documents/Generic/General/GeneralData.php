@@ -6,9 +6,6 @@ use SchoolAid\FEL\Contracts\General\IGeneralData;
 
 abstract class GeneralData implements IGeneralData
 {
-    public function __construct()
-    {}
-
     public function getIssueDateTime(): string
     {
         return date('c');
