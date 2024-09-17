@@ -1,5 +1,5 @@
 <?php
-namespace SchoolAid\FEL\Entities\General;
+namespace SchoolAid\FEL\Documents\Generic\General;
 
 use SchoolAid\FEL\Contracts\General\IGeneralEmisor;
 
@@ -30,16 +30,16 @@ abstract class GeneralEmisor implements IGeneralEmisor
         string $departamento,
         string $pais
     ) {
-        $this->correo_emisor = $correo_emisor;
+        $this->correo_emisor          = $correo_emisor;
         $this->codigo_establecimiento = $codigo_establecimiento;
-        $this->nit_emisor = $nit_emisor;
-        $this->nombre_comercial = $nombre_comercial;
-        $this->afiliacion_iva = $afiliacion_iva;
-        $this->nombre_emisor = $nombre_emisor;
-        $this->direccion = $direccion;
-        $this->codigo_postal = $codigo_postal;
-        $this->municipio = $municipio;
-        $this->departamento = $departamento;
-        $this->pais = $pais;
+        $this->nit_emisor             = $nit_emisor;
+        $this->nombre_comercial       = $nombre_comercial;
+        $this->afiliacion_iva         = $afiliacion_iva;
+        $this->nombre_emisor          = $nombre_emisor;
+        $this->direccion              = $direccion;
+        $this->codigo_postal          = $codigo_postal;
+        $this->municipio              = $municipio;
+        $this->departamento           = $departamento;
+        $this->pais                   = $pais;
     }
 }
