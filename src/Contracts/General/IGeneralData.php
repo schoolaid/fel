@@ -1,12 +1,13 @@
 <?php
 namespace SchoolAid\FEL\Contracts\General;
+use SchoolAid\FEL\Contracts\GeneratesXML;
 
-interface IGeneralData
+interface IGeneralData extends GeneratesXML
 {
     public function getIssueDateTime(): string;
     public function getCurrencyCode(): string;
     public function getAccessNumber(): ?string;
     public function getType(): string;
     public function getExportation(): ?string;
-    public function asXML(): string;
+       
 }
