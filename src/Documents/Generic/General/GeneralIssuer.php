@@ -1,56 +1,32 @@
 <?php
 namespace SchoolAid\FEL\Documents\Generic\General;
 
-use SchoolAid\FEL\Contracts\General\IGeneralIssuer;
+use SchoolAid\FEL\Contracts\GeneratesXML;
 use SchoolAid\FEL\Enum\General\GeneralIssuerXML;
+use SchoolAid\FEL\Models\Issuer;
+use SchoolAid\FEL\Enum\General\IVAAffiliationType;
+use SchoolAid\FEL\Traits\XMLWritterTrait;
 
-//Do we need to create a subclass? Previosly this class was abstract but the pest test throws an error
 
-class GeneralIssuer implements IGeneralIssuer
-{
-    public function getEmailIssuer(): string 
-    {
-        return '';
-    }
-    public function getIssuerNit(): string 
-    {
-        return '';
-    }
-    public function getCommercialName(): string
-    {
-        return '';
-    }
-    public function getIvaAffiliation(): string
-    {
-        return '';
-    }
-    public function getIssuerName(): string
-    {
-        return '';
-    }
+class GeneralIssuer implements GeneratesXML {
+    use XMLWritterTrait;
+    public function __construct(
+        private Issuer $issuer,
+        private GeneralAddress $genralAddress,
+        private IVAAffiliationType $ivaAffiliation
+    ) {}
 
     public function asXML(): string
     {
-        $xw = xmlwriter_open_memory();
-        xmlwriter_set_indent($xw, 1);
-        xmlwriter_start_element($xw, 'Emisor');
-
         $attributes = [
-            GeneralIssuerXML::EmailIssuer->value => $this->getEmailIssuer(),
-            GeneralIssuerXML::IssuerNit->value   => $this->getIssuerNit(),
-            GeneralIssuerXML::CommercialName->value => $this->getCommercialName(),
-            GeneralIssuerXML::IvaAffiliation->value => $this->getIvaAffiliation(),
-            GeneralIssuerXML::IssuerName->value => $this->getIssuerName(),
+            GeneralIssuerXML::EmailIssuer->value => $this->issuer->getEmailIssuer(),
+            GeneralIssuerXML::IssuerNit->value   => $this->issuer->getIssuerNit(),
+            GeneralIssuerXML::CommercialName->value => $this->issuer->getCommercialName(),
+            GeneralIssuerXML::IVAAffiliation->value => $this->ivaAffiliation->value,
+            GeneralIssuerXML::IssuerName->value => $this->issuer->getIssuerName(),
+            GeneralIssuerXML::Address->value => $this->genralAddress->asXML()
         ];
 
-        foreach ($attributes as $key => $value) {
-            xmlwriter_start_attribute($xw, $key);
-            xmlwriter_text($xw, $value);
-            xmlwriter_end_attribute($xw);
-        }
-
-        xmlwriter_end_element($xw);
-
-        return xmlwriter_output_memory($xw);
+        return $this->buildXML('dte:Emisor',$attributes, 'attributes');
     }
 }

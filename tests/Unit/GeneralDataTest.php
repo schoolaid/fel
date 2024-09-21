@@ -5,6 +5,8 @@ use SchoolAid\FEL\Documents\Generic\General\GeneralAddress;
 use SchoolAid\FEL\Enum\General\AddressType;
 use SchoolAid\FEL\Models\Address;
 use SchoolAid\FEL\Documents\Generic\General\GeneralIssuer;
+use SchoolAid\FEL\Models\Issuer;
+use SchoolAid\FEL\Enum\General\IVAAffiliationType;
 
 
 it('Bill General Data generates the XML correctly', function () {
@@ -13,21 +15,24 @@ it('Bill General Data generates the XML correctly', function () {
     echo $generalData->asXML();
 });
 
-it('Generate ADDRESS headers XML', function() {
-    $adress = new GeneralAddress(new Address(
-        '14 avenida A',
-        '01006',
-        'Guatemala',
-        'Guatemala',
-        'Guatemala'
-    ), AddressType::Issuer);
-    echo 'Generate ADDRESS headers XML';
-    echo "\n";
-    echo $adress->asXML();
-    
-});
 
 it('General Issuer XML', function() {
-    $generalIssuer = new GeneralIssuer();
-    echo $generalIssuer->asXML();
+    $generalIssuer = new GeneralIssuer(
+        new Issuer(
+            'issuer@test.com',
+            '123456789',
+            'Comercial Name',
+            'Issuer Name'),
+        new GeneralAddress( new Address(
+            '14 avenida A',
+            '01006',
+            'Guatemala',
+            'Guatemala',
+            'Guatemala'
+        ), AddressType::Issuer),
+        IVAAffiliationType::General);
+
+        echo 'General Issuer XML';
+        echo "\n";
+        echo $generalIssuer->asXML();
 });
