@@ -21,12 +21,15 @@ class GeneralIssuer implements GeneratesXML
     public function asXML(): string
     {
         $attributes = [
-            GeneralIssuerXML::EmailIssuer->value => $this->issuer->getEmailIssuer(),
             GeneralIssuerXML::IssuerNit->value   => $this->issuer->getIssuerNit(),
             GeneralIssuerXML::CommercialName->value => $this->issuer->getCommercialName(),
             GeneralIssuerXML::IVAAffiliation->value => $this->ivaAffiliation->value,
             GeneralIssuerXML::IssuerName->value => $this->issuer->getIssuerName(),
         ];
+
+        if ($this->issuer->getEmailIssuer() !== null) {
+            $attributes[GeneralIssuerXML::EmailIssuer->value] = $this->issuer->getEmailIssuer();
+        }
 
         $xml = $this->buildXML(GeneralIssuerXML::Tag->value, $attributes, $this->genralAddress->asXML());
 

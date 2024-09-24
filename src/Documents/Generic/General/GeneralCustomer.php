@@ -19,10 +19,17 @@ class GeneralCustomer implements GeneratesXML
     public function asXML(): string
     {
         $attributes = [
-            GeneralCustomerXML::EmailCustomer->value => $this->customer->getEmailCustomer(),
+            GeneralCustomerXML::IdCustomer->value => $this->customer->getIdCustomer(),
             GeneralCustomerXML::CustomerName->value => $this->customer->getCustomerName(),
-            GeneralCustomerXML::SpecialType->value => $this->customer->getSpecialType(),
         ];
+
+        if($this->customer->getEmailCustomer() !== null) {
+            $attributes[GeneralCustomerXML::EmailCustomer->value] = $this->customer->getEmailCustomer();
+        }
+
+        if($this->customer->getSpecialType() !== null) {
+            $attributes[GeneralCustomerXML::SpecialType->value] = $this->customer->getSpecialType();
+        }
 
         $xml = $this->buildXML(GeneralCustomerXML::Tag->value, $attributes, $this->generalAddress->asXML());
 
