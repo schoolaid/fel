@@ -1,4 +1,5 @@
 <?php
+namespace SchoolAid\FEL\Enum\General;
 
 enum ProductServiceType: string
 {

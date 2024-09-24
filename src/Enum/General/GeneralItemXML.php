@@ -3,7 +3,7 @@
 namespace SchoolAid\FEL\Enum\General;
 
 
-enum GeneralItemsXML: string 
+enum GeneralItemXML: string 
 {
     case Tag = 'dte:Item';
     case LineNumber = 'dte:NumeroLinea';

@@ -2,10 +2,10 @@
 
 namespace SchoolAid\FEL\Documents\Generic\General;
 
-use ProductServiceType;
 use SchoolAid\FEL\Contracts\GeneratesXML;
-use SchoolAid\FEL\Enum\General\GeneralItemsXML;
-use SchoolAid\FEL\Models\Items;
+use SchoolAid\FEL\Enum\General\GeneralItemXML;
+use SchoolAid\FEL\Enum\General\ProductServiceType;
+use SchoolAid\FEL\Models\Item;
 use SchoolAid\FEL\Models\TaxDetails;
 use SchoolAid\FEL\Traits\XMLWritterTrait;
 
@@ -13,7 +13,7 @@ class GeneralItems implements GeneratesXML
 {
     use XMLWritterTrait;
     public function __construct(
-        private Items $items,
+        private Item $item,
         private ProductServiceType $productServiceType,
         // private TaxDetails $taxDetails
     ) {}
@@ -21,25 +21,25 @@ class GeneralItems implements GeneratesXML
     public function asXML(): string
     {
         $sub_elements = [
-            GeneralItemsXML::LineNumber->value => $this->items->getLineNumber(),
-            GeneralItemsXML::ProductOrService->value => $this->productServiceType->value,
-            GeneralItemsXML::Quantity->value => $this->items->getQuantity(),
-            GeneralItemsXML::Description->value => $this->items->getDescription(),
-            GeneralItemsXML::UnitPrice->value => $this->items->getUnitPrice(),
-            GeneralItemsXML::Price->value => $this->items->getPrice(),
-            GeneralItemsXML::Total->value => $this->items->getTotal(),
+            GeneralItemXML::LineNumber->value => $this->item->getLineNumber(),
+            GeneralItemXML::ProductOrService->value => $this->productServiceType->value,
+            GeneralItemXML::Quantity->value => $this->item->getQuantity(),
+            GeneralItemXML::Description->value => $this->item->getDescription(),
+            GeneralItemXML::UnitPrice->value => $this->item->getUnitPrice(),
+            GeneralItemXML::Price->value => $this->item->getPrice(),
+            GeneralItemXML::Total->value => $this->item->getTotal(),
         ];
 
-        if($this->items->getDiscount() !== null) {
-            $sub_elements[GeneralItemsXML::Discount->value] = $this->items->getDiscount();
+        if($this->item->getDiscount() !== null) {
+            $sub_elements[GeneralItemXML::Discount->value] = $this->item->getDiscount();
         }
 
-        if($this->items->getUnitOfMeasurement() !== null) {
-            $sub_elements[GeneralItemsXML::UnitOfMeasurement->value] = $this->items->getUnitOfMeasurement();
+        if($this->item->getUnitOfMeasurement() !== null) {
+            $sub_elements[GeneralItemXML::UnitOfMeasurement->value] = $this->item->getUnitOfMeasurement();
         }
 
 
-        $xml = $this->buildXML(GeneralItemsXML::Tag->value, [], $sub_elements);
+        $xml = $this->buildXML(GeneralItemXML::Tag->value, [], $sub_elements);
         return $xml;
     }
 }

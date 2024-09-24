@@ -3,7 +3,7 @@
 namespace SchoolAid\FEL\Models;
 
 
-class Items {
+class Item {
     public function __construct(
         private string $line_number,
         private string $product_or_service,

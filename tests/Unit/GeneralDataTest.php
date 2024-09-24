@@ -9,8 +9,9 @@ use SchoolAid\FEL\Documents\Generic\General\GeneralCustomer;
 use SchoolAid\FEL\Documents\Generic\General\GeneralItems;
 use SchoolAid\FEL\Models\Issuer;
 use SchoolAid\FEL\Enum\General\IVAAffiliationType;
+use SchoolAid\FEL\Enum\General\ProductServiceType;
 use SchoolAid\FEL\Models\Customer;
-use SchoolAid\FEL\Models\Items;
+use SchoolAid\FEL\Models\Item;
 
 it('Bill General Data generates the XML correctly', function () {
     $generalData = new BillGeneralData();
@@ -66,7 +67,7 @@ it('General Customer XML', function () {
 
 
 it('Items XML', function () {
-    $items = new Items(
+    $item = new Item(
         '1',
         'B',
         1,
@@ -78,7 +79,7 @@ it('Items XML', function () {
         100.00
     );
 
-    $generalItems = new GeneralItems($items);
+    $generalItems = new GeneralItems($item, ProductServiceType::Product);
 
     echo 'Items XML';
     echo "\n";
