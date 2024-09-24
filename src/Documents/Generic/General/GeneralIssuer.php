@@ -1,4 +1,5 @@
 <?php
+
 namespace SchoolAid\FEL\Documents\Generic\General;
 
 use SchoolAid\FEL\Contracts\GeneratesXML;
@@ -8,7 +9,8 @@ use SchoolAid\FEL\Enum\General\IVAAffiliationType;
 use SchoolAid\FEL\Traits\XMLWritterTrait;
 
 
-class GeneralIssuer implements GeneratesXML {
+class GeneralIssuer implements GeneratesXML
+{
     use XMLWritterTrait;
     public function __construct(
         private Issuer $issuer,
@@ -24,9 +26,10 @@ class GeneralIssuer implements GeneratesXML {
             GeneralIssuerXML::CommercialName->value => $this->issuer->getCommercialName(),
             GeneralIssuerXML::IVAAffiliation->value => $this->ivaAffiliation->value,
             GeneralIssuerXML::IssuerName->value => $this->issuer->getIssuerName(),
-            GeneralIssuerXML::Address->value => $this->genralAddress->asXML()
         ];
 
-        return $this->buildXML('dte:Emisor',$attributes, 'attributes');
+        $xml = $this->buildXML('dte:Emisor', $attributes, $this->genralAddress->asXML());
+
+        return $xml;
     }
 }
