@@ -11,7 +11,6 @@ trait XMLWritterTrait
 
         xmlwriter_start_element($xw, $rootElement);
 
-        // Agregar atributos
         foreach ($attributes as $key => $value) {
             xmlwriter_start_attribute($xw, $key);
             xmlwriter_text($xw, $value);
@@ -19,7 +18,7 @@ trait XMLWritterTrait
         }
 
         if (is_string($element)) {
-            xmlwriter_write_raw($xw, $element); // Cambia a write_raw
+            xmlwriter_write_raw($xw, $element);
         }
 
         if (is_array($element)) {
@@ -29,7 +28,6 @@ trait XMLWritterTrait
                 xmlwriter_end_element($xw);
             }
         }
-
 
         xmlwriter_end_element($xw);
 

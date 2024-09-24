@@ -28,7 +28,7 @@ class GeneralIssuer implements GeneratesXML
             GeneralIssuerXML::IssuerName->value => $this->issuer->getIssuerName(),
         ];
 
-        $xml = $this->buildXML('dte:Emisor', $attributes, $this->genralAddress->asXML());
+        $xml = $this->buildXML(GeneralIssuerXML::Tag->value, $attributes, $this->genralAddress->asXML());
 
         return $xml;
     }
