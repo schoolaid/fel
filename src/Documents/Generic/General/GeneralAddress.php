@@ -28,6 +28,6 @@ class GeneralAddress implements GeneratesXML
         ];
 
 
-        return $this->buildXML($this->addressType->value,[], $sub_elements);
+        return $this->buildXML($this->addressType->value, element: $sub_elements);
     }
 }

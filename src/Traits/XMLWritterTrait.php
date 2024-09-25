@@ -4,7 +4,7 @@ namespace SchoolAid\FEL\Traits;
 
 trait XMLWritterTrait
 {
-    public function buildXML(string $rootElement, array $attributes, $element = ''): string
+    public function buildXML(string $rootElement, array $attributes = [], string|array $element = []): string
     {
         $xw = xmlwriter_open_memory();
         xmlwriter_set_indent($xw, 1);

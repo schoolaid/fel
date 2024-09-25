@@ -39,7 +39,7 @@ class GeneralItems implements GeneratesXML
         }
 
 
-        $xml = $this->buildXML(GeneralItemXML::Tag->value, [], $sub_elements);
+        $xml = $this->buildXML(GeneralItemXML::Tag->value, element: $sub_elements);
         return $xml;
     }
 }
