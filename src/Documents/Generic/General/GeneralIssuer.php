@@ -3,13 +3,13 @@ namespace SchoolAid\FEL\Documents\Generic\General;
 
 use SchoolAid\FEL\Models\Issuer;
 use SchoolAid\FEL\Contracts\GeneratesXML;
-use SchoolAid\FEL\Traits\XMLWritterTrait;
+use SchoolAid\FEL\Traits\HasXML;
 use SchoolAid\FEL\Enum\General\GeneralIssuerXML;
 use SchoolAid\FEL\Enum\General\IVAAffiliationType;
 
 class GeneralIssuer implements GeneratesXML
 {
-    use XMLWritterTrait;
+    use HasXML;
     public function __construct(
         private Issuer $issuer,
         private GeneralAddress $genralAddress,

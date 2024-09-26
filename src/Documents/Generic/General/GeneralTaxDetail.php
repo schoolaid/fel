@@ -4,12 +4,12 @@ namespace SchoolAid\FEL\Documents\Generic\General;
 use SchoolAid\FEL\Models\TaxDetail;
 use SchoolAid\FEL\Enum\General\TaxNames;
 use SchoolAid\FEL\Contracts\GeneratesXML;
-use SchoolAid\FEL\Traits\XMLWritterTrait;
+use SchoolAid\FEL\Traits\HasXML;
 use SchoolAid\FEL\Enum\General\GeneralTaxDetailXML;
 
 class GeneralTaxDetail implements GeneratesXML
 {
-    use XMLWritterTrait;
+    use HasXML;
 
     public function __construct(
         private TaxDetail $taxDetail,

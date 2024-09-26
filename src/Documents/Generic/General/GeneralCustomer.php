@@ -3,12 +3,12 @@ namespace SchoolAid\FEL\Documents\Generic\General;
 
 use SchoolAid\FEL\Models\Customer;
 use SchoolAid\FEL\Contracts\GeneratesXML;
-use SchoolAid\FEL\Traits\XMLWritterTrait;
+use SchoolAid\FEL\Traits\HasXML;
 use SchoolAid\FEL\Enum\General\GeneralCustomerXML;
 
 class GeneralCustomer implements GeneratesXML
 {
-    use XMLWritterTrait;
+    use HasXML;
 
     public function __construct(
         private Customer $customer,

@@ -2,15 +2,14 @@
 namespace SchoolAid\FEL\Documents\Generic\General;
 
 use SchoolAid\FEL\Models\Item;
-use SchoolAid\FEL\Models\TaxDetail;
 use SchoolAid\FEL\Contracts\GeneratesXML;
-use SchoolAid\FEL\Traits\XMLWritterTrait;
+use SchoolAid\FEL\Traits\HasXML;
 use SchoolAid\FEL\Enum\General\GeneralItemXML;
 use SchoolAid\FEL\Enum\General\ProductServiceType;
 
 class GeneralItems implements GeneratesXML
 {
-    use XMLWritterTrait;
+    use HasXML;
     public function __construct(
         private Item $item,
         private ProductServiceType $productServiceType,

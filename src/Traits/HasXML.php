@@ -1,7 +1,7 @@
 <?php
 namespace SchoolAid\FEL\Traits;
 
-trait XMLWritterTrait
+trait HasXML
 {
     public function buildXML(string $rootElement, array $attributes = [], string | array $element = []): string
     {

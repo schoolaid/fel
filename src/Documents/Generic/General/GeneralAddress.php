@@ -3,13 +3,13 @@ namespace SchoolAid\FEL\Documents\Generic\General;
 
 use SchoolAid\FEL\Models\Address;
 use SchoolAid\FEL\Contracts\GeneratesXML;
-use SchoolAid\FEL\Traits\XMLWritterTrait;
+use SchoolAid\FEL\Traits\HasXML;
 use SchoolAid\FEL\Enum\General\AddressType;
 use SchoolAid\FEL\Enum\General\GeneralAddressXML;
 
 class GeneralAddress implements GeneratesXML
 {
-    use XMLWritterTrait;
+    use HasXML;
     public function __construct(
         private Address $address,
         private AddressType $addressType
