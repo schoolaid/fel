@@ -18,16 +18,19 @@ class GeneralTaxDetail implements GeneratesXML
 
     public function asXML(): string
     {
-        $attributes = [
-            GeneralTaxDetailXML::ShortName->value        => $this->taxName->value,
-            GeneralTaxDetailXML::TaxableUnitCode->value  => $this->taxDetail->getTaxableUnitCode(),
-            GeneralTaxDetailXML::TaxableAmount->value    => $this->taxDetail->getTaxableAmount(),
-            GeneralTaxDetailXML::TaxableUnitCount->value => $this->taxDetail->getTaxableUnitCount(),
-            GeneralTaxDetailXML::TaxAmount->value        => $this->taxDetail->getTaxAmount(),
-            GeneralTaxDetailXML::Total->value            => $this->taxDetail->getTotal(),
+        $subElements = [
+            GeneralTaxDetailXML::ShortName->value       => $this->taxName->value,
+            GeneralTaxDetailXML::TaxableUnitCode->value => $this->taxDetail->getTaxableUnitCode(),
+            GeneralTaxDetailXML::TaxableAmount->value   => $this->taxDetail->getTaxableAmount(),
+            GeneralTaxDetailXML::TaxAmount->value       => $this->taxDetail->getTaxAmount(),
+            GeneralTaxDetailXML::Total->value           => $this->taxDetail->getTotal(),
         ];
 
-        $xml = $this->buildXML(GeneralTaxDetailXML::Tag->value, $attributes);
+        if ($this->taxDetail->getTaxableUnitCount() !== null) {
+            $subElements[GeneralTaxDetailXML::TaxableUnitCount->value] = $this->taxDetail->getTaxableUnitCount();
+        }
+
+        $xml = $this->buildXML(GeneralTaxDetailXML::Tag->value, element:$subElements);
 
         return $xml;
     }

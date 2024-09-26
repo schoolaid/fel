@@ -2,11 +2,11 @@
 namespace SchoolAid\FEL\Enum\General;
 
 enum GeneralTaxDetailXML: string {
-    case Tag              = 'detalleImpuesto';
-    case ShortName        = 'nombreCorto';
-    case TaxableUnitCode  = 'codigoUnidadgravable';
-    case TaxableAmount    = 'montoGravable';
-    case TaxableUnitCount = 'cantidadUnidadesGravables';
-    case TaxAmount        = 'montoImpuesto';
-    case Total            = 'total';
+    case Tag              = 'dte:detalleImpuesto';
+    case ShortName        = 'dte:nombreCorto';
+    case TaxableUnitCode  = 'dte:codigoUnidadgravable';
+    case TaxableAmount    = 'dte:montoGravable';
+    case TaxableUnitCount = 'dte:cantidadUnidadesGravables';
+    case TaxAmount        = 'dte:montoImpuesto';
+    case Total            = 'dte:total';
 }

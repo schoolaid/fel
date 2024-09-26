@@ -12,4 +12,5 @@ enum GeneralItemXML: string {
     case Price             = 'dte:Precio';
     case Discount          = 'dte:Descuento';
     case Total             = 'dte:Total';
+    case TaxDetail         = 'dte:Impuestos';
 }

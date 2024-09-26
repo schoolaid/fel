@@ -2,6 +2,7 @@
 namespace SchoolAid\FEL\Documents\Generic\General;
 
 use SchoolAid\FEL\Models\Item;
+use SchoolAid\FEL\Models\TaxDetail;
 use SchoolAid\FEL\Contracts\GeneratesXML;
 use SchoolAid\FEL\Traits\XMLWritterTrait;
 use SchoolAid\FEL\Enum\General\GeneralItemXML;
@@ -13,7 +14,7 @@ class GeneralItems implements GeneratesXML
     public function __construct(
         private Item $item,
         private ProductServiceType $productServiceType,
-        // private TaxDetails $taxDetails
+        private GeneralTaxDetail $taxDetails
     ) {}
 
     public function asXML(): string
@@ -25,6 +26,7 @@ class GeneralItems implements GeneratesXML
             GeneralItemXML::Description->value      => $this->item->getDescription(),
             GeneralItemXML::UnitPrice->value        => $this->item->getUnitPrice(),
             GeneralItemXML::Price->value            => $this->item->getPrice(),
+            GeneralItemXML::TaxDetail->value        => $this->taxDetails->asXML(),
             GeneralItemXML::Total->value            => $this->item->getTotal(),
         ];
 

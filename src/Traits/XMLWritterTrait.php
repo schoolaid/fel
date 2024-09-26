@@ -23,7 +23,12 @@ trait XMLWritterTrait
         if (is_array($element)) {
             foreach ($element as $subElementName => $subElementValue) {
                 xmlwriter_start_element($xw, $subElementName);
-                xmlwriter_text($xw, $subElementValue);
+                if (is_string($subElementValue)) {
+                    xmlwriter_write_raw($xw, $subElementValue);
+
+                } else {
+                    xmlwriter_text($xw, $subElementValue);
+                }
                 xmlwriter_end_element($xw);
             }
         }
@@ -32,4 +37,5 @@ trait XMLWritterTrait
 
         return xmlwriter_output_memory($xw);
     }
+
 }
