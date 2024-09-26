@@ -1,7 +1,8 @@
-<?php 
+<?php
 namespace SchoolAid\FEL\Models;
 
-class Issuer {
+class Issuer
+{
     public function __construct(
         private string $emailIssuer,
         private string $issuerNit,

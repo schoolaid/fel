@@ -1,16 +1,15 @@
 <?php
-
 namespace SchoolAid\FEL\Models;
 
-
-class Item {
+class Item
+{
     public function __construct(
-        private string $line_number,
-        private string $product_or_service,
+        private string $lineNumber,
+        private string $productOrService,
         private int $quantity,
-        private string $unit_of_measurement,
+        private string $unitOfMeasurement,
         private string $description,
-        private float $unit_price,
+        private float $unitPrice,
         private float $price,
         private float $discount,
         private float $total,
@@ -18,12 +17,12 @@ class Item {
 
     public function getLineNumber(): string
     {
-        return $this->line_number;
+        return $this->lineNumber;
     }
 
     public function getProductOrService(): string
     {
-        return $this->product_or_service;
+        return $this->productOrService;
     }
 
     public function getQuantity(): int
@@ -33,7 +32,7 @@ class Item {
 
     public function getUnitOfMeasurement(): string
     {
-        return $this->unit_of_measurement;
+        return $this->unitOfMeasurement;
     }
 
     public function getDescription(): string
@@ -43,7 +42,7 @@ class Item {
 
     public function getUnitPrice(): float
     {
-        return $this->unit_price;
+        return $this->unitPrice;
     }
 
     public function getPrice(): float

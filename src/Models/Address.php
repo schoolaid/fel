@@ -1,5 +1,4 @@
 <?php
-
 namespace SchoolAid\FEL\Models;
 
 class Address

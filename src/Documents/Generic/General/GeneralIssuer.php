@@ -1,13 +1,11 @@
 <?php
-
 namespace SchoolAid\FEL\Documents\Generic\General;
 
-use SchoolAid\FEL\Contracts\GeneratesXML;
-use SchoolAid\FEL\Enum\General\GeneralIssuerXML;
 use SchoolAid\FEL\Models\Issuer;
-use SchoolAid\FEL\Enum\General\IVAAffiliationType;
+use SchoolAid\FEL\Contracts\GeneratesXML;
 use SchoolAid\FEL\Traits\XMLWritterTrait;
-
+use SchoolAid\FEL\Enum\General\GeneralIssuerXML;
+use SchoolAid\FEL\Enum\General\IVAAffiliationType;
 
 class GeneralIssuer implements GeneratesXML
 {
@@ -21,10 +19,10 @@ class GeneralIssuer implements GeneratesXML
     public function asXML(): string
     {
         $attributes = [
-            GeneralIssuerXML::IssuerNit->value   => $this->issuer->getIssuerNit(),
+            GeneralIssuerXML::IssuerNit->value      => $this->issuer->getIssuerNit(),
             GeneralIssuerXML::CommercialName->value => $this->issuer->getCommercialName(),
             GeneralIssuerXML::IVAAffiliation->value => $this->ivaAffiliation->value,
-            GeneralIssuerXML::IssuerName->value => $this->issuer->getIssuerName(),
+            GeneralIssuerXML::IssuerName->value     => $this->issuer->getIssuerName(),
         ];
 
         if ($this->issuer->getEmailIssuer() !== null) {

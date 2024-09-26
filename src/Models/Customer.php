@@ -1,18 +1,18 @@
 <?php
-
 namespace SchoolAid\FEL\Models;
 
-class Customer {
+class Customer
+{
     public function __construct(
-        private string $idCustomer,
+        private string $taxId,
         private string $emailCustomer,
         private string $customerName,
         private string $specialType
     ) {}
-    
-    public function getIdCustomer(): string
+
+    public function getTaxId(): string
     {
-        return $this->idCustomer;
+        return $this->taxId;
     }
 
     public function getEmailCustomer(): string

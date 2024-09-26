@@ -13,41 +13,40 @@ namespace SchoolAid\FEL\Models;
 
 // private $total;
 
-class TaxDetails 
+class TaxDetails
 {
     public function __construct(
-        private string $short_name,
-        private int $taxable_unit_code,
-        private float $taxable_amount,
-        private ?float $taxable_unit_count,
-        private float $tax_amount,
+        private string $shortName,
+        private int $taxableUnitCode,
+        private float $taxableAmount,
+        private ?float $taxableUnitCount,
+        private float $taxAmount,
         private float $total
-    )
-    {}
+    ) {}
 
     public function getShortName(): string
     {
-        return $this->short_name;
+        return $this->shortName;
     }
 
     public function getTaxableUnitCode(): int
     {
-        return $this->taxable_unit_code;
+        return $this->taxableUnitCode;
     }
 
     public function getTaxableAmount(): float
     {
-        return $this->taxable_amount;
+        return $this->taxableAmount;
     }
 
     public function getTaxableUnitCount(): ?float
     {
-        return $this->taxable_unit_count;
+        return $this->taxableUnitCount;
     }
 
     public function getTaxAmount(): float
     {
-        return $this->tax_amount;
+        return $this->taxAmount;
     }
 
     public function getTotal(): float
