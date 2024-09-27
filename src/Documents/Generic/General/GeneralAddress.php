@@ -18,7 +18,7 @@ class GeneralAddress implements GeneratesXML
     public function asXML(): string
     {
 
-        $sub_elements = [
+        $subElements = [
             GeneralAddressXML::Address->value    => $this->address->getAddress(),
             GeneralAddressXML::PostalCode->value => $this->address->getPostalCode(),
             GeneralAddressXML::City->value       => $this->address->getCity(),
@@ -26,6 +26,6 @@ class GeneralAddress implements GeneratesXML
             GeneralAddressXML::Country->value    => $this->address->getCountry(),
         ];
 
-        return $this->buildXML($this->addressType->value, element: $sub_elements);
+        return $this->buildXML($this->addressType->value, element: $subElements);
     }
 }

@@ -13,7 +13,7 @@ class GeneralIssuer implements GeneratesXML
     public function __construct(
         private Issuer $issuer,
         private GeneralAddress $genralAddress,
-        private IVAAffiliationType $ivaAffiliation
+        private IVAAffiliationType $ivaAffiliationType
     ) {}
 
     public function asXML(): string
@@ -21,11 +21,11 @@ class GeneralIssuer implements GeneratesXML
         $attributes = [
             GeneralIssuerXML::IssuerNit->value      => $this->issuer->getIssuerNit(),
             GeneralIssuerXML::CommercialName->value => $this->issuer->getCommercialName(),
-            GeneralIssuerXML::IVAAffiliation->value => $this->ivaAffiliation->value,
+            GeneralIssuerXML::IVAAffiliation->value => $this->ivaAffiliationType->value,
             GeneralIssuerXML::IssuerName->value     => $this->issuer->getIssuerName(),
         ];
 
-        if ($this->issuer->getEmailIssuer() !== null) {
+        if ($this->issuer->getEmailIssuer()) {
             $attributes[GeneralIssuerXML::EmailIssuer->value] = $this->issuer->getEmailIssuer();
         }
 

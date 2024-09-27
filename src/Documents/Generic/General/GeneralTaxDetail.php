@@ -26,11 +26,11 @@ class GeneralTaxDetail implements GeneratesXML
             GeneralTaxDetailXML::Total->value           => $this->taxDetail->getTotal(),
         ];
 
-        if ($this->taxDetail->getTaxableUnitCount() !== null) {
+        if ($this->taxDetail->getTaxableUnitCount()) {
             $subElements[GeneralTaxDetailXML::TaxableUnitCount->value] = $this->taxDetail->getTaxableUnitCount();
         }
 
-        $xml = $this->buildXML(GeneralTaxDetailXML::Tag->value, element:$subElements);
+        $xml = $this->buildXML(GeneralTaxDetailXML::Tag->value, element: $subElements);
 
         return $xml;
     }

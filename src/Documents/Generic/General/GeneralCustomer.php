@@ -22,11 +22,11 @@ class GeneralCustomer implements GeneratesXML
             GeneralCustomerXML::CustomerName->value => $this->customer->getCustomerName(),
         ];
 
-        if ($this->customer->getEmailCustomer() !== null) {
+        if ($this->customer->getEmailCustomer()) {
             $attributes[GeneralCustomerXML::EmailCustomer->value] = $this->customer->getEmailCustomer();
         }
 
-        if ($this->customer->getSpecialType() !== null) {
+        if ($this->customer->getSpecialType()) {
             $attributes[GeneralCustomerXML::SpecialType->value] = $this->customer->getSpecialType();
         }
 

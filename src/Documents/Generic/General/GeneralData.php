@@ -43,11 +43,11 @@ abstract class GeneralData implements IGeneralData
             GeneralDataXML::CurrencyCode->value  => $this->getCurrencyCode(),
         ];
 
-        if ($this->getAccessNumber() !== null) {
+        if ($this->getAccessNumber()) {
             $attributes[GeneralDataXML::AccessNumber->value] = $this->getAccessNumber();
         }
 
-        if ($this->getExportation() !== null) {
+        if ($this->getExportation()) {
             $attributes[GeneralDataXML::Exportation->value] = $this->getExportation();
         }
 

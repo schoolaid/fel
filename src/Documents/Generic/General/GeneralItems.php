@@ -29,11 +29,11 @@ class GeneralItems implements GeneratesXML
             GeneralItemXML::Total->value            => $this->item->getTotal(),
         ];
 
-        if ($this->item->getDiscount() !== null) {
+        if ($this->item->getDiscount()) {
             $subElements[GeneralItemXML::Discount->value] = $this->item->getDiscount();
         }
 
-        if ($this->item->getUnitOfMeasurement() !== null) {
+        if ($this->item->getUnitOfMeasurement()) {
             $subElements[GeneralItemXML::UnitOfMeasurement->value] = $this->item->getUnitOfMeasurement();
         }
 
