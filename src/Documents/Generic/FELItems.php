@@ -19,6 +19,7 @@ class FELItems implements GeneratesXML
     public function asXML(): string
     {
         $itemsSubElements = [];
+        $count = 0;
         foreach ($this->items as $item) {
             $subElements = [
                 ItemXML::LineNumber->value       => $item->getLineNumber(),
@@ -39,7 +40,7 @@ class FELItems implements GeneratesXML
                 $subElements[ItemXML::UnitOfMeasurement->value] = $item->getUnitOfMeasurement();
             }
             
-            $itemsSubElements[] = $subElements;
+            $itemsSubElements[ItemXML::Tag->value . (++$count)] = $subElements;
         }
 
         $xml = $this->buildXML(ItemXML::Tag->value, element: $itemsSubElements);
