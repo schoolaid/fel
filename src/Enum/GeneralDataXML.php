@@ -1,8 +1,8 @@
 <?php
-namespace SchoolAid\FEL\Enum\General;
+namespace SchoolAid\FEL\Enum;
 
-enum GeneralDataXML: string {
-    case Tag           = 'dte:DatosGenerales';
+enum DataXML: string {
+    case Tag           = 'dte:Datoses';
     case IssueDateTime = 'FechaHoraEmision';
     case Type          = 'Tipo';
     case CurrencyCode  = 'CodigoMoneda';

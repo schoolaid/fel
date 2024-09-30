@@ -1,5 +1,5 @@
 <?php
-namespace SchoolAid\FEL\Contracts\General;
+namespace SchoolAid\FEL\Contracts;
 use SchoolAid\FEL\Contracts\GeneratesXML;
 
 interface IGeneralData extends GeneratesXML

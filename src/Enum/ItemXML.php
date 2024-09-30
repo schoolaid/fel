@@ -1,7 +1,7 @@
 <?php
-namespace SchoolAid\FEL\Enum\General;
+namespace SchoolAid\FEL\Enum;
 
-enum GeneralItemXML: string {
+enum ItemXML: string {
     case Tag               = 'dte:Item';
     case LineNumber        = 'dte:NumeroLinea';
     case ProductOrService  = 'dte:BienOServicio';

@@ -1,7 +1,7 @@
 <?php
-namespace SchoolAid\FEL\Enum\General;
+namespace SchoolAid\FEL\Enum;
 
-enum GeneralTaxDetailXML: string {
+enum TaxDetailXML: string {
     case Tag              = 'dte:detalleImpuesto';
     case ShortName        = 'dte:nombreCorto';
     case TaxableUnitCode  = 'dte:codigoUnidadgravable';

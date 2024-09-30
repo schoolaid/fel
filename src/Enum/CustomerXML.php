@@ -1,7 +1,7 @@
 <?php
-namespace SchoolAid\FEL\Enum\General;
+namespace SchoolAid\FEL\Enum;
 
-enum GeneralCustomerXML: string {
+enum CustomerXML: string {
     case Tag           = 'dte:Receptor';
     case TaxId         = 'NITReceptor';
     case EmailCustomer = 'CorreoReceptor';

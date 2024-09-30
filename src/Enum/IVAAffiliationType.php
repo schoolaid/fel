@@ -1,5 +1,5 @@
 <?php
-namespace SchoolAid\FEL\Enum\General;
+namespace SchoolAid\FEL\Enum;
 
 enum IVAAffiliationType: string {
     case General = 'Regimen General';

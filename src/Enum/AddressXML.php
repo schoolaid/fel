@@ -1,7 +1,7 @@
 <?php
-namespace SchoolAid\FEL\Enum\General;
+namespace SchoolAid\FEL\Enum;
 
-enum GeneralAddressXML: string {
+enum AddressXML: string {
     case Address    = 'dte:Direccion';
     case PostalCode = 'dte:CodigoPostal';
     case City       = 'dte:Municipio';

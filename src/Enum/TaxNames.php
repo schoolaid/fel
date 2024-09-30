@@ -1,5 +1,5 @@
 <?php
-namespace SchoolAid\FEL\Enum\General;
+namespace SchoolAid\FEL\Enum;
 
 enum TaxNames: string {
     case IVA    = 'IVA';

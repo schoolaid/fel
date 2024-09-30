@@ -1,7 +1,7 @@
 <?php
-namespace SchoolAid\FEL\Documents\Bill\General;
+namespace SchoolAid\FEL\Documents\Bill;
 
-use SchoolAid\FEL\Documents\Generic\General\GeneralData;
+use SchoolAid\FEL\Documents\Generic\GeneralData;
 
 class BillGeneralData extends GeneralData
 {

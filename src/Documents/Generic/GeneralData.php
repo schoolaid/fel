@@ -1,8 +1,8 @@
 <?php
-namespace SchoolAid\FEL\Documents\Generic\General;
+namespace SchoolAid\FEL\Documents\Generic;
 
-use SchoolAid\FEL\Enum\General\GeneralDataXML;
-use SchoolAid\FEL\Contracts\General\IGeneralData;
+use SchoolAid\FEL\Enum\GeneralDataXML;
+use SchoolAid\FEL\Contracts\IGeneralData;
 
 abstract class GeneralData implements IGeneralData
 {

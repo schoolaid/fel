@@ -1,7 +1,7 @@
 <?php
-namespace SchoolAid\FEL\Enum\General;
+namespace SchoolAid\FEL\Enum;
 
-enum GeneralIssuerXML: string {
+enum IssuerXML: string {
     case Tag            = 'dte:Emisor';
     case EmailIssuer    = 'CorreoEmisor';
     case IssuerNit      = 'NITEmisor';

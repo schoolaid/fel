@@ -25,7 +25,6 @@ trait HasXML
                 xmlwriter_start_element($xw, $subElementName);
                 if (is_string($subElementValue)) {
                     xmlwriter_write_raw($xw, $subElementValue);
-
                 } else {
                     xmlwriter_text($xw, $subElementValue);
                 }
