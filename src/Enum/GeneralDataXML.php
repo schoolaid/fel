@@ -1,7 +1,7 @@
 <?php
 namespace SchoolAid\FEL\Enum;
 
-enum DataXML: string {
+enum GeneralDataXML: string {
     case Tag           = 'dte:Datoses';
     case IssueDateTime = 'FechaHoraEmision';
     case Type          = 'Tipo';
