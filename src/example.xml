@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dte:GTDocumento xmlns:ds="http://www.w3.org/2000/09/xmldsig#"
+  xmlns:dte="http://www.sat.gob.gt/dte/fel/0.2.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" Version="0.1" xsi:schemaLocation="http://www.sat.gob.gt/dte/fel/0.1.0">
+  <dte:SAT ClaseDocumento="dte">
+    <dte:DTE ID="DatosCertificados">
+      <dte:DatosEmision ID="DatosEmision">
+        <!-- GeneralData -->
+        <dte:DatosGenerales FechaHoraEmision="2024-08-13T16:03:33-06:00" CodigoMoneda="GTQ" Tipo="FACT" />
+        <!-- Issuer -->
+        <dte:Emisor CorreoEmisor="hsinglic@gmail.com" CodigoEstablecimiento="1" NITEmisor="6999972"
+          NombreComercial="UNIDANZA" AfiliacionIVA="GEN" NombreEmisor="UNIDANZA, S.A.">
+          <dte:DireccionEmisor>
+            <dte:Direccion>15 AVENIDA 5-50 COLONIA VISTA HERMOSA III, EDIFICIO SPAZIO NIVEL 2 OF.
+              209 ZONA 15</dte:Direccion>
+            <dte:CodigoPostal>01001</dte:CodigoPostal>
+            <dte:Municipio>GUATEMALA</dte:Municipio>
+            <dte:Departamento>GUATEMALA</dte:Departamento>
+            <dte:Pais>GT</dte:Pais>
+          </dte:DireccionEmisor>
+        </dte:Emisor>
+        <!-- Customer -->
+        <dte:Receptor IDReceptor="CF" CorreoReceptor="lola.anava0616@gmail.com"
+          NombreReceptor="Valeria López">
+          <dte:DireccionReceptor>
+            <dte:Direccion>ciudad</dte:Direccion>
+            <dte:CodigoPostal>010015</dte:CodigoPostal>
+            <dte:Municipio></dte:Municipio>
+            <dte:Departamento></dte:Departamento>
+            <dte:Pais>GT</dte:Pais>
+          </dte:DireccionReceptor>
+        </dte:Receptor>
+        <!-- Phrases -->
+        <dte:Frases>
+          <dte:Frase CodigoEscenario="1" TipoFrase="1" />
+        </dte:Frases>
+        <!-- Items -->
+        <dte:Items>
+          <!-- Item -->
+          <dte:Item NumeroLinea="1" BienOServicio="S">
+            <dte:Cantidad>1</dte:Cantidad>
+            <dte:UnidadMedida>UND</dte:UnidadMedida>
+            <dte:Descripcion>Ballet Grado 6 - L / M / S - 3 veces por semana</dte:Descripcion>
+            <dte:PrecioUnitario>437.5</dte:PrecioUnitario>
+            <dte:Precio>437.5</dte:Precio>
+            <dte:Descuento>0</dte:Descuento>
+            <dte:Impuestos>
+              <dte:Impuesto>
+                <dte:NombreCorto>IVA</dte:NombreCorto>
+                <dte:CodigoUnidadGravable>1</dte:CodigoUnidadGravable>
+                <dte:MontoGravable>390.63</dte:MontoGravable>
+                <dte:MontoImpuesto>46.87</dte:MontoImpuesto>
+              </dte:Impuesto>
+            </dte:Impuestos>
+            <dte:Total>437.5</dte:Total>
+          </dte:Item>
+        </dte:Items>
+        <!-- Totals -->
+        <dte:Totales>
+          <dte:TotalImpuestos>
+            <dte:TotalImpuesto NombreCorto="IVA" TotalMontoImpuesto="46.87" />
+          </dte:TotalImpuestos>
+          <dte:GranTotal>437.5</dte:GranTotal>
+        </dte:Totales>
+      </dte:DatosEmision>
+    </dte:DTE>
+  </dte:SAT>
+</dte:GTDocumento>

@@ -13,7 +13,7 @@ class FELItems implements GeneratesXML
     public function __construct(
         private array $items,
         private ProductServiceType $productServiceType,
-        // private TaxDetail $taxDetails
+        // private FELTaxDetail $taxDetails
     ) {}
 
     public function asXML(): string

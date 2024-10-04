@@ -11,9 +11,17 @@ trait HasXML
         xmlwriter_start_element($xw, $rootElement);
 
         foreach ($attributes as $key => $value) {
-            //FIX FOR ARRAY ATTRIBUTES
             xmlwriter_start_attribute($xw, $key);
-            xmlwriter_text($xw, $value);
+            if (is_array($value)) {
+                foreach ($value as $subElementName => $subElementValue) {
+                    xmlwriter_start_element($xw, $subElementName);
+                    xmlwriter_text($xw, $subElementValue);
+                    xmlwriter_end_element($xw);
+                }
+            } else {
+                xmlwriter_text($xw, $value);
+
+            }
             xmlwriter_end_attribute($xw);
         }
 

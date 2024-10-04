@@ -7,6 +7,5 @@ enum IssuerXML: string {
     case IssuerNit      = 'NITEmisor';
     case CommercialName = 'NombreComercial';
     case IssuerName     = 'NombreEmisor';
-    case IVAAffiliation = 'TipoRegimen';
-    case Address        = 'DireccionEmisor';
+    case IVAAffiliation = 'AfiliacionIVA';
 }

@@ -13,6 +13,6 @@ class BillGeneralData extends GeneralData
 
     public function getType(): string
     {
-        return 'GEN';
+        return 'FACT';
     }
 }

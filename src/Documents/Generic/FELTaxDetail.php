@@ -7,7 +7,7 @@ use SchoolAid\FEL\Contracts\GeneratesXML;
 use SchoolAid\FEL\Traits\HasXML;
 use SchoolAid\FEL\Enum\TaxDetailXML;
 
-class TaxDetail implements GeneratesXML
+class FELTaxDetail implements GeneratesXML
 {
     use HasXML;
 
