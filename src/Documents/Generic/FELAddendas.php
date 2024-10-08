@@ -14,19 +14,14 @@ class FELAddendas implements GeneratesXML
 
     public function asXML(): string
     {
-        $addendasSubElements = [];
-        $count               = 0;
+        $subElements = [];
+    
         foreach ($this->addendas as $addenda) {
-            $subElements = [
-                AddendaXML::Name->value  => $addenda->getName(),
-                AddendaXML::Value->value => $addenda->getValue(),
-            ];
-
-            $addendasSubElements[AddendaXML::Tag->value . (++$count)] = $subElements;
+            $subElements[$addenda->getName()] = $addenda->getValue();
         }
-
-        $xml = $this->buildXML(AddendaXML::Tag->value, element: $addendasSubElements);
-
+        
+        $xml = $this->buildXML(AddendaXML::Tag->value, element: $subElements);
+    
         return $xml;
     }
 

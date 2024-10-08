@@ -89,15 +89,11 @@ it('GeneralBill XML generator', function () {
     $addendas = [
         new Addenda(
             '1',
-            '1',
-            '1',
-            '2021-01-01'
+            'name1',
         ),
         new Addenda(
             '2',
-            '2',
-            '2',
-            '2021-01-01'
+            'name2',
         ),
     ];
 

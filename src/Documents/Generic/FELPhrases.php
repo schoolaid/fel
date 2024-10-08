@@ -15,19 +15,19 @@ class FELPhrases implements GeneratesXML
     public function asXML(): string
     {
         $phrasesSubElems = [];
-        $count             = 0;
+
         foreach ($this->phrases as $phrase) {
-            $subElems = [
-                PhraseXML::PhraseType->value   => $phrase->getPhraseType(),
+            $attributes = [
                 PhraseXML::codeScenario->value => $phrase->getCodeScenario(),
+                PhraseXML::PhraseType->value   => $phrase->getPhraseType(),
                 PhraseXML::Resolution->value   => $phrase->getResolution(),
                 PhraseXML::Date->value         => $phrase->getDate(),
             ];
-            $phrasesSubElems[PhraseXML::TagSingular->value . (++$count)] = $subElems;
+    
+            $phrasesSubElems[] = $this->buildXML(PhraseXML::TagSingular->value, $attributes);
         }
-
-        $xml = $this->buildXML(PhraseXML::TagPlural->value, element: $phrasesSubElems);
-
+        $xml = $this->buildXML(PhraseXML::TagPlural->value, element: implode("", $phrasesSubElems));
+    
         return $xml;
 
     }
