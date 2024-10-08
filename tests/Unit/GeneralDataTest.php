@@ -79,6 +79,7 @@ it('GeneralBill XML generator', function () {
             100.00
         ),
     ];
+    
 
     $Items = new FELItems($item, ProductServiceType::Product);
 

@@ -6,7 +6,8 @@
     <dte:DTE ID="DatosCertificados">
       <dte:DatosEmision ID="DatosEmision">
         <!-- GeneralData -->
-        <dte:DatosGenerales FechaHoraEmision="2024-08-13T16:03:33-06:00" CodigoMoneda="GTQ" Tipo="FACT" />
+        <dte:DatosGenerales FechaHoraEmision="2024-08-13T16:03:33-06:00" CodigoMoneda="GTQ"
+          Tipo="FACT" />
         <!-- Issuer -->
         <dte:Emisor CorreoEmisor="hsinglic@gmail.com" CodigoEstablecimiento="1" NITEmisor="6999972"
           NombreComercial="UNIDANZA" AfiliacionIVA="GEN" NombreEmisor="UNIDANZA, S.A.">

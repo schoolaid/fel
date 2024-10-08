@@ -17,7 +17,7 @@ class GeneralBill extends FELDocument {
         private FELItems $items,
         private FELPhrases $phrases,
         private FELAddendas $addendas,
-        private FELTotals $totals
+        // private FELTotals $totals
     ) {}
 
     public function getSections(): array
@@ -29,7 +29,7 @@ class GeneralBill extends FELDocument {
             $this->items,
             $this->phrases,
             $this->addendas,
-            $this->totals
+            // $this->totals
         ];
     }
 }

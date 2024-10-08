@@ -21,6 +21,7 @@ class FELItems implements GeneratesXML
         $itemsSubElements = [];
         $count = 0;
         foreach ($this->items as $item) {
+
             $subElements = [
                 ItemXML::LineNumber->value       => $item->getLineNumber(),
                 ItemXML::ProductOrService->value => $this->productServiceType->value,
