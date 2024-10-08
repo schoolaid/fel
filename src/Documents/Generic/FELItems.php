@@ -5,6 +5,7 @@ use SchoolAid\FEL\Contracts\GeneratesXML;
 use SchoolAid\FEL\Traits\HasXML;
 use SchoolAid\FEL\Enum\ItemXML;
 use SchoolAid\FEL\Enum\ProductServiceType;
+use SchoolAid\FEL\Enum\TaxNames;
 use SchoolAid\FEL\Models\TaxDetail;
 
 class FELItems implements GeneratesXML
@@ -13,7 +14,7 @@ class FELItems implements GeneratesXML
     public function __construct(
         private array $items,
         private ProductServiceType $productServiceType,
-        // private FELTaxDetail $taxDetails
+        private TaxDetail $taxDetails
     ) {}
 
     public function asXML(): string
@@ -22,6 +23,8 @@ class FELItems implements GeneratesXML
         $count = 0;
         foreach ($this->items as $item) {
 
+            $tax= new FELTaxDetail($item, $this->taxDetails, TaxNames::IVA);
+
             $subElements = [
                 ItemXML::LineNumber->value       => $item->getLineNumber(),
                 ItemXML::ProductOrService->value => $this->productServiceType->value,
@@ -29,7 +32,7 @@ class FELItems implements GeneratesXML
                 ItemXML::Description->value      => $item->getDescription(),
                 ItemXML::UnitPrice->value        => $item->getUnitPrice(),
                 ItemXML::Price->value            => $item->getPrice(),
-                // ItemXML::TaxDetail->value        => $this->taxDetails->asXML(),
+                ItemXML::TaxDetail->value        => $tax->asXML(),
                 ItemXML::Total->value            => $item->getTotal(),
             ];
     

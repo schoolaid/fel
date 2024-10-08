@@ -19,6 +19,7 @@ use SchoolAid\FEL\Enum\ProductServiceType;
 use SchoolAid\FEL\Models\Addenda;
 use SchoolAid\FEL\Models\Item;
 use SchoolAid\FEL\Models\Phrase;
+use SchoolAid\FEL\Models\TaxDetail;
 
 it('GeneralBill XML generator', function () {
     $generalData = new BillGeneralData();
@@ -81,7 +82,7 @@ it('GeneralBill XML generator', function () {
     ];
     
 
-    $Items = new FELItems($item, ProductServiceType::Product);
+    $Items = new FELItems($item, ProductServiceType::Product, new TaxDetail('1'));
 
     $Totals = new FELTotals($item);
     //Deberia ser lo mismo para TAX

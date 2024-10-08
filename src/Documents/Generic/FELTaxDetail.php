@@ -20,8 +20,8 @@ class FELTaxDetail implements GeneratesXML
 
     public function asXML(): string
     {
-        $calculatedTax  = round($this->item["total"] / 1.12, 2);
-        $taxAmount     = $this->item["total"] - $calculatedTax;
+        $calculatedTax  = round($this->item->getTotal() / 1.12, 2);
+        $taxAmount     = $this->item->getTotal() - $calculatedTax;
         $taxableAmount = $calculatedTax;
 
         $subElements = [
