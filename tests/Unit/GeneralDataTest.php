@@ -26,6 +26,7 @@ it('GeneralBill XML generator', function () {
     $generalIssuer = new FELIssuer(
         new Issuer(
             'issuer@test.com',
+            1,
             '123456789',
             'Comercial Name',
             'Issuer Name'

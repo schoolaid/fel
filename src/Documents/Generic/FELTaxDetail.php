@@ -2,11 +2,11 @@
 namespace SchoolAid\FEL\Documents\Generic;
 
 use SchoolAid\FEL\Models\Item;
+use SchoolAid\FEL\Enum\TaxNames;
 use SchoolAid\FEL\Traits\HasXML;
 use SchoolAid\FEL\Models\TaxDetail;
 use SchoolAid\FEL\Enum\TaxDetailXML;
 use SchoolAid\FEL\Contracts\GeneratesXML;
-use SchoolAid\FEL\Enum\TaxNames;
 
 class FELTaxDetail implements GeneratesXML
 {
@@ -20,7 +20,7 @@ class FELTaxDetail implements GeneratesXML
 
     public function asXML(): string
     {
-        $calculatedTax  = round($this->item->getTotal() / 1.12, 2);
+        $calculatedTax = round($this->item->getTotal() / 1.12, 2);
         $taxAmount     = $this->item->getTotal() - $calculatedTax;
         $taxableAmount = $calculatedTax;
 

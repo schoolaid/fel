@@ -23,11 +23,11 @@ class FELPhrases implements GeneratesXML
                 PhraseXML::Resolution->value   => $phrase->getResolution(),
                 PhraseXML::Date->value         => $phrase->getDate(),
             ];
-    
+
             $phrasesSubElems[] = $this->buildXML(PhraseXML::TagSingular->value, $attributes);
         }
         $xml = $this->buildXML(PhraseXML::TagPlural->value, element: implode("", $phrasesSubElems));
-    
+
         return $xml;
 
     }

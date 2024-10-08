@@ -1,9 +1,9 @@
 <?php
 namespace SchoolAid\FEL\Documents\Generic;
 
-use SchoolAid\FEL\Contracts\GeneratesXML;
-use SchoolAid\FEL\Enum\TotalsXML;
 use SchoolAid\FEL\Traits\HasXML;
+use SchoolAid\FEL\Enum\TotalsXML;
+use SchoolAid\FEL\Contracts\GeneratesXML;
 
 class FELTotals implements GeneratesXML
 {
@@ -31,7 +31,8 @@ class FELTotals implements GeneratesXML
         ];
 
         $xml = $this->buildXML(TotalsXML::Tag->value, element: $subElements);
+
         return $xml;
-        
+
     }
 }

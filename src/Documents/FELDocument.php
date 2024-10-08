@@ -3,7 +3,6 @@ namespace SchoolAid\FEL\Documents;
 
 use SchoolAid\FEL\Contracts\GetSectionsXML;
 
-
 class FELDocument implements GetSectionsXML
 {
     public function __construct(
@@ -23,7 +22,7 @@ class FELDocument implements GetSectionsXML
             $xmlParts[] = $section->asXML();
         }
 
-        // return implode("\n", $xmlParts); 
+        // return implode("\n", $xmlParts);
         $dynamicContent = implode("\n", $xmlParts);
 
         $xml = '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
@@ -34,7 +33,7 @@ class FELDocument implements GetSectionsXML
         $xml .= '    <dte:SAT ClaseDocumento="dte">' . "\n";
         $xml .= '        <dte:DTE ID="DatosCertificados">' . "\n";
         $xml .= '            <dte:DatosEmision ID="DatosEmision">' . "\n";
-        $xml .=                     $dynamicContent;
+        $xml .= $dynamicContent;
         $xml .= '            </dte:DatosEmision>' . "\n";
         $xml .= '        </dte:DTE>' . "\n";
         $xml .= '    </dte:SAT>' . "\n";
