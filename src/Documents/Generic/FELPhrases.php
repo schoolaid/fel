@@ -20,9 +20,14 @@ class FELPhrases implements GeneratesXML
             $attributes = [
                 PhraseXML::codeScenario->value => $phrase->getCodeScenario(),
                 PhraseXML::PhraseType->value   => $phrase->getPhraseType(),
-                PhraseXML::Resolution->value   => $phrase->getResolution(),
-                PhraseXML::Date->value         => $phrase->getDate(),
             ];
+
+            if($phrase->getResolution()){
+                $attributes[PhraseXML::Resolution->value] = $phrase->getResolution();
+            }
+            if($phrase->getDate()){
+                $attributes[PhraseXML::Date->value] = $phrase->getDate();
+            }
 
             $phrasesSubElems[] = $this->buildXML(PhraseXML::TagSingular->value, $attributes);
         }

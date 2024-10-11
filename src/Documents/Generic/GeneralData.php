@@ -1,6 +1,8 @@
 <?php
 namespace SchoolAid\FEL\Documents\Generic;
 
+use DateTime;
+use DateTimeZone;
 use SchoolAid\FEL\Enum\GeneralDataXML;
 use SchoolAid\FEL\Contracts\IGeneralData;
 
@@ -8,7 +10,8 @@ abstract class GeneralData implements IGeneralData
 {
     public function getIssueDateTime(): string
     {
-        return date('c');
+        $date = new DateTime('now', new DateTimeZone('America/Guatemala'));
+        return $date->format('Y-m-d\TH:i:sP');
     }
 
     public function getCurrencyCode(): string

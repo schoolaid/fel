@@ -26,7 +26,7 @@ it('GeneralBill XML generator', function () {
         new Issuer(
             'issuer@test.com',
             1,
-            '123456789',
+            '11201169K',
             'Comercial Name',
             'Issuer Name'
         ),
@@ -35,24 +35,24 @@ it('GeneralBill XML generator', function () {
             '01006',
             'Guatemala',
             'Guatemala',
-            'Guatemala'
+            'GT'
         ), AddressType::Issuer),
         IVAAffiliationType::General
     );
 
     $generalCustomer = new FELCustomer(
         new Customer(
-            '123456789',
+            'CF',
             'customer@test.com',
             'Customer Name',
-            'Special Type'
+            NULL
         ),
         new FELAddress(new Address(
             '14 avenida A',
             '01006',
             'Guatemala',
             'Guatemala',
-            'Guatemala'
+            'GT'
         ), AddressType::Customer)
     );
 
@@ -61,7 +61,7 @@ it('GeneralBill XML generator', function () {
             '1',
             'B',
             1,
-            'Unidad',
+            'UND',
             'Producto de Prueba',
             100.00,
             100.00,
@@ -72,7 +72,7 @@ it('GeneralBill XML generator', function () {
             '2',
             'B',
             1,
-            'Unidad',
+            'UND',
             'Producto de Prueba 2',
             100.00,
             100.00,

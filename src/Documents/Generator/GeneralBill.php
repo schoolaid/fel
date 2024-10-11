@@ -26,8 +26,8 @@ class GeneralBill extends FELDocument {
             $this->generalData,
             $this->issuer,
             $this->customer,
-            $this->items,
             $this->phrases,
+            $this->items,
             $this->totals
         ];
     }

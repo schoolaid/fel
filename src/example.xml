@@ -61,3 +61,6 @@
     </dte:DTE>
   </dte:SAT>
 </dte:GTDocumento>
+
+<!-- Regimen
+{'GEN', 'PEQ', 'EXE', 'PEE', 'AGR', 'AGE', 'ECA', 'EXI'} -->

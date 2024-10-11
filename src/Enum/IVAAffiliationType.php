@@ -2,7 +2,7 @@
 namespace SchoolAid\FEL\Enum;
 
 enum IVAAffiliationType: string {
-    case General = 'Regimen General';
-    case Small   = 'Pequeno Contribuyente';
-    case Exempt  = 'Exento';
+    case General = 'GEN';
+    case Small   = 'PEQ';
+    case Exempt  = 'EXT';
 }

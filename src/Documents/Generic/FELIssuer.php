@@ -23,6 +23,7 @@ class FELIssuer implements GeneratesXML
             IssuerXML::CommercialName->value => $this->issuer->getCommercialName(),
             IssuerXML::IVAAffiliation->value => $this->ivaAffiliationType->value,
             IssuerXML::IssuerName->value     => $this->issuer->getIssuerName(),
+            IssuerXML::EstablishmentCode->value => $this->issuer->getEstablishmentCode(),
         ];
 
         if ($this->issuer->getEmailIssuer()) {
