@@ -8,6 +8,7 @@ trait HasXML
         $xw = xmlwriter_open_memory();
         xmlwriter_set_indent($xw, 1);
 
+        // xmlwriter_start_document($xw, '1.0', 'UTF-8');
         xmlwriter_start_element($xw, $rootElement);
 
         foreach ($attributes as $key => $value) {

@@ -13,20 +13,19 @@ class FELTaxDetail implements GeneratesXML
     use HasXML;
 
     public function __construct(
-        private Item $item,
-        private TaxDetail $taxDetail,
-        private TaxNames $taxName
+        private float $amount, //recibir monto del item
+        private TaxNames $tax // meterlo en TaxName 
     ) {}
 
     public function asXML(): string
     {
-        $calculatedTax = round($this->item->getTotal() / 1.12, 2);
-        $taxAmount     = $this->item->getTotal() - $calculatedTax;
+        $calculatedTax = round($this->amount / (1 + $this->tax->percentage()), 2);
+        $taxAmount     = $this->amount - $calculatedTax;
         $taxableAmount = $calculatedTax;
 
         $subElements = [
-            TaxDetailXML::ShortName->value       => $this->taxName->value,
-            TaxDetailXML::TaxableUnitCode->value => $this->taxDetail->getTaxableUnitCode(),
+            TaxDetailXML::ShortName->value       => $this->tax->value,
+            TaxDetailXML::TaxableUnitCode->value => $this->tax->taxableCode(),
             TaxDetailXML::TaxableAmount->value   => $taxableAmount,
             TaxDetailXML::TaxAmount->value       => $taxAmount,
         ];

@@ -6,8 +6,8 @@ class Phrase
     public function __construct(
         private string $phraseType,
         private string $codeScenario,
-        private string $resolution,
-        private string $date
+        private ?string $resolution,
+        private ?string $date
     )
     {}
 

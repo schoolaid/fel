@@ -14,7 +14,7 @@ class FELItems implements GeneratesXML
     public function __construct(
         private array $items,
         private ProductServiceType $productServiceType,
-        private TaxDetail $taxDetails
+        // private TaxDetail $taxDetails //array de taxes
     ) {}
 
     public function asXML(): string
@@ -23,7 +23,7 @@ class FELItems implements GeneratesXML
         $count            = 0;
         foreach ($this->items as $item) {
 
-            $tax = new FELTaxDetail($item, $this->taxDetails, TaxNames::IVA);
+            $tax = new FELTaxDetail($item->getTotal(), TaxNames::IVA);
 
             $attributes = [
                 ItemXML::LineNumber->value       => ++$count,

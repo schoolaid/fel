@@ -1,28 +1,26 @@
 <?php
 
-use SchoolAid\FEL\Documents\FELDocument;
+use SchoolAid\FEL\Models\Item;
 use SchoolAid\FEL\Models\Issuer;
+use SchoolAid\FEL\Models\Phrase;
+use SchoolAid\FEL\Models\Addenda;
 use SchoolAid\FEL\Models\Address;
 use SchoolAid\FEL\Models\Customer;
 use SchoolAid\FEL\Enum\AddressType;
 use SchoolAid\FEL\Enum\IVAAffiliationType;
+use SchoolAid\FEL\Enum\ProductServiceType;
+use SchoolAid\FEL\Documents\Generic\FELItems;
+use SchoolAid\FEL\Documents\Generic\FELIssuer;
+use SchoolAid\FEL\Documents\Generic\FELTotals;
 use SchoolAid\FEL\Documents\Generic\FELAddress;
+use SchoolAid\FEL\Documents\Generic\FELPhrases;
+use SchoolAid\FEL\Documents\Generic\FELAddendas;
 use SchoolAid\FEL\Documents\Generic\FELCustomer;
 use SchoolAid\FEL\Documents\Bill\BillGeneralData;
 use SchoolAid\FEL\Documents\Generator\GeneralBill;
-use SchoolAid\FEL\Documents\Generic\FELAddendas;
-use SchoolAid\FEL\Documents\Generic\FELIssuer;
-use SchoolAid\FEL\Documents\Generic\FELItems;
-use SchoolAid\FEL\Documents\Generic\FELPhrases;
-use SchoolAid\FEL\Documents\Generic\FELTotals;
-use SchoolAid\FEL\Enum\ProductServiceType;
-use SchoolAid\FEL\Models\Addenda;
-use SchoolAid\FEL\Models\Item;
-use SchoolAid\FEL\Models\Phrase;
-use SchoolAid\FEL\Models\TaxDetail;
 
 it('GeneralBill XML generator', function () {
-    $generalData = new BillGeneralData();
+    $generalData   = new BillGeneralData();
     $generalIssuer = new FELIssuer(
         new Issuer(
             'issuer@test.com',
@@ -81,9 +79,8 @@ it('GeneralBill XML generator', function () {
             100.00
         ),
     ];
-    
 
-    $Items = new FELItems($item, ProductServiceType::Product, new TaxDetail('1'));
+    $Items = new FELItems($item, ProductServiceType::Product);
 
     $Totals = new FELTotals($item);
     //Deberia ser lo mismo para TAX
@@ -114,20 +111,19 @@ it('GeneralBill XML generator', function () {
         ),
     ];
 
-    
-
     $documentFEL = new GeneralBill(
         $generalData,
         $generalIssuer,
         $generalCustomer,
-        $Items,
         new FELPhrases($phrases),
-        new FELAddendas($addendas),
-        $Totals
+        $Items,
+        $Totals,
+        null
     );
 
     echo 'GeneralBill XML generator';
     echo "\n";
     echo $documentFEL->generateXML();
-            
+
+    //Crear Assertions para validar contenido del XMl
 });

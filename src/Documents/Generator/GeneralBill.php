@@ -14,10 +14,10 @@ class GeneralBill extends FELDocument {
         private GeneralData $generalData,
         private FELIssuer $issuer,
         private FELCustomer $customer,
-        private FELItems $items,
         private FELPhrases $phrases,
-        private FELAddendas $addendas,
-        // private FELTotals $totals
+        private FELItems $items,
+        private FELTotals $totals,
+        private ?FELAddendas $addendas,
     ) {}
 
     public function getSections(): array
@@ -28,8 +28,11 @@ class GeneralBill extends FELDocument {
             $this->customer,
             $this->items,
             $this->phrases,
-            $this->addendas,
-            // $this->totals
+            $this->totals
         ];
     }
 }
+
+// TODO'S 
+// 1. Addendas are not necesary allways
+// 2. If you add Addendas you need to add Complements to the bill

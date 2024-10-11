@@ -5,11 +5,10 @@
   <dte:SAT ClaseDocumento="dte">
     <dte:DTE ID="DatosCertificados">
       <dte:DatosEmision ID="DatosEmision">
-        <!-- GeneralData -->
         <dte:DatosGenerales FechaHoraEmision="2024-08-13T16:03:33-06:00" CodigoMoneda="GTQ"
           Tipo="FACT" />
-        <!-- Issuer -->
-        <dte:Emisor CorreoEmisor="hsinglic@gmail.com" CodigoEstablecimiento="1" NITEmisor="6999972"
+        <dte:Emisor CorreoEmisor="hsinglic@gmail.com" CodigoEstablecimiento="1"
+          NITEmisor="11201169K"
           NombreComercial="UNIDANZA" AfiliacionIVA="GEN" NombreEmisor="UNIDANZA, S.A.">
           <dte:DireccionEmisor>
             <dte:Direccion>15 AVENIDA 5-50 COLONIA VISTA HERMOSA III, EDIFICIO SPAZIO NIVEL 2 OF.
@@ -20,7 +19,6 @@
             <dte:Pais>GT</dte:Pais>
           </dte:DireccionEmisor>
         </dte:Emisor>
-        <!-- Customer -->
         <dte:Receptor IDReceptor="CF" CorreoReceptor="lola.anava0616@gmail.com"
           NombreReceptor="Valeria López">
           <dte:DireccionReceptor>
@@ -31,13 +29,10 @@
             <dte:Pais>GT</dte:Pais>
           </dte:DireccionReceptor>
         </dte:Receptor>
-        <!-- Phrases -->
         <dte:Frases>
           <dte:Frase CodigoEscenario="1" TipoFrase="1" />
         </dte:Frases>
-        <!-- Items -->
         <dte:Items>
-          <!-- Item -->
           <dte:Item NumeroLinea="1" BienOServicio="S">
             <dte:Cantidad>1</dte:Cantidad>
             <dte:UnidadMedida>UND</dte:UnidadMedida>
@@ -56,7 +51,6 @@
             <dte:Total>437.5</dte:Total>
           </dte:Item>
         </dte:Items>
-        <!-- Totals -->
         <dte:Totales>
           <dte:TotalImpuestos>
             <dte:TotalImpuesto NombreCorto="IVA" TotalMontoImpuesto="46.87" />
