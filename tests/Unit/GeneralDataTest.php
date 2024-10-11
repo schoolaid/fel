@@ -18,6 +18,7 @@ use SchoolAid\FEL\Documents\Generic\FELAddendas;
 use SchoolAid\FEL\Documents\Generic\FELCustomer;
 use SchoolAid\FEL\Documents\Bill\BillGeneralData;
 use SchoolAid\FEL\Documents\Generator\GeneralBill;
+use SchoolAid\FEL\Documents\Generic\FELTaxTotal;
 
 it('GeneralBill XML generator', function () {
     $generalData   = new BillGeneralData();
@@ -100,14 +101,8 @@ it('GeneralBill XML generator', function () {
         new Phrase(
             '1',
             '1',
-            '1',
-            '2021-01-01'
-        ),
-        new Phrase(
-            '2',
-            '2',
-            '2',
-            '2021-01-01'
+            null,
+            null,
         ),
     ];
 
@@ -127,3 +122,64 @@ it('GeneralBill XML generator', function () {
 
     //Crear Assertions para validar contenido del XMl
 });
+
+
+// it('XML tax totals tes', function () {
+//     //     $item = [
+//     //     new Item(
+//     //         '1',
+//     //         'B',
+//     //         1,
+//     //         'Unidad',
+//     //         'Producto de Prueba',
+//     //         100.00,
+//     //         100.00,
+//     //         0.00,
+//     //         100.00
+//     //     ),
+//     //     new Item(
+//     //         '2',
+//     //         'B',
+//     //         1,
+//     //         'Unidad',
+//     //         'Producto de Prueba 2',
+//     //         100.00,
+//     //         100.00,
+//     //         0.00,
+//     //         100.00
+//     //     ),
+//     // ];
+
+//     // $Totals = new FELTotals($item);
+//     // echo 'XML totals tes';
+//     // echo "\n";
+//     // echo $Totals->asXML();
+
+//     $taxes = [
+//         [
+//             'shortName' => 'IVA',
+//             'taxableAmount' => 100.00,
+//             'taxAmount' => 12.00,
+//         ],
+//         [
+//             'shortName' => 'IVA',
+//             'taxableAmount' => 100.00,
+//             'taxAmount' => 12.00,
+//         ],
+//         [
+//             'shortName' => 'IVA',
+//             'taxableAmount' => 100.00,
+//             'taxAmount' => 12.00,
+//         ],
+//         [
+//             'shortName' => 'IVA',
+//             'taxableAmount' => 100.00,
+//             'taxAmount' => 12.00,
+//         ],
+//     ];
+
+//     $Totals = new FELTaxTotal($taxes);
+//     echo 'XML totals tes';
+//     echo "\n";
+//     echo $Totals->asXML();
+// });

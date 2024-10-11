@@ -21,12 +21,12 @@ class Phrase
         return $this->codeScenario;
     }
 
-    public function getResolution(): string
+    public function getResolution(): ?string
     {
         return $this->resolution;
     }
 
-    public function getDate(): string
+    public function getDate(): ?string
     {
         return $this->date;
     }
