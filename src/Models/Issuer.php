@@ -5,6 +5,7 @@ class Issuer
 {
     public function __construct(
         private string $emailIssuer,
+        private int $establishmentCode,
         private string $issuerNit,
         private string $commercialName,
         private string $issuerName
@@ -13,6 +14,11 @@ class Issuer
     public function getEmailIssuer(): string
     {
         return $this->emailIssuer;
+    }
+
+    public function getEstablishmentCode(): int
+    {
+        return $this->establishmentCode;
     }
 
     public function getIssuerNit(): string
