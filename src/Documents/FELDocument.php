@@ -41,4 +41,25 @@ class FELDocument implements GetSectionsXML
 
         return $xml;
     }
+
+    public function generateAnnulationXML(): string
+    {
+        $xmlParts = [];
+
+        foreach ($this->getSections() as $section) {
+            $xmlParts[] = $section->asXML();
+        }
+
+        $dynamicContent = implode("\n", $xmlParts);
+
+        $xml = '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
+        $xml .= '<dte:GTAnulacionDocumento xmlns:dte="http://www.sat.gob.gt/dte/fel/0.1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" Version="0.1">';
+        $xml .= '    <dte:SAT>' . "\n";
+        $xml .= '        <dte:AnulacionDTE ID="DatosCertificados">' . "\n";
+        $xml .= $dynamicContent;
+        $xml .= '        </dte:AnulacionDTE>' . "\n";
+        $xml .= '    </dte:SAT>' . "\n";
+        $xml .= '</dte:GTAnulacionDocumento>' . "\n";
+        return $xml;
+    }
 }

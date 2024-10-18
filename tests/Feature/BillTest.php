@@ -1,7 +1,8 @@
 <?php
 namespace Tests\Feature;
 
-
+use PHPUnit\Runner\Baseline\Issue;
+use Tests\BaseTestCase;
 use SchoolAid\FEL\Models\Item;
 use SchoolAid\FEL\Models\Issuer;
 use SchoolAid\FEL\Models\Phrase;
@@ -19,8 +20,9 @@ use SchoolAid\FEL\Documents\Generic\FELAddress;
 use SchoolAid\FEL\Documents\Generic\FELPhrases;
 use SchoolAid\FEL\Documents\Generic\FELCustomer;
 use SchoolAid\FEL\Documents\Bill\BillGeneralData;
+use SchoolAid\FEL\Documents\Generator\CancelBill;
 use SchoolAid\FEL\Documents\Generator\GeneralBill;
-use Tests\BaseTestCase;
+use SchoolAid\FEL\Documents\Generic\FELCancel;
 
 class BillTest extends BaseTestCase
 {
@@ -28,7 +30,6 @@ class BillTest extends BaseTestCase
      * Tes for bill
      *
      */
-    
 
     public function testExample()
     {
@@ -50,7 +51,7 @@ class BillTest extends BaseTestCase
             ), AddressType::Issuer),
             IVAAffiliationType::General
         );
-    
+
         $generalCustomer = new FELCustomer(
             new Customer(
                 'CF',
@@ -66,8 +67,8 @@ class BillTest extends BaseTestCase
                 'GT'
             ), AddressType::Customer)
         );
-    
-        $item = [
+
+        $items = [
             new Item(
                 '1',
                 'B',
@@ -91,53 +92,59 @@ class BillTest extends BaseTestCase
                 100.00
             ),
         ];
-    
-        $Items = new FELItems($item, ProductServiceType::Product);
-    
-        $Totals = new FELTotals($item);
-    
+
+        $felItems = new FELItems($items, ProductServiceType::Product);
+        $totals   = new FELTotals($items);
+
         $addendas = [
-            new Addenda(
-                '1',
-                'name1',
-            ),
-            new Addenda(
-                '2',
-                'name2',
-            ),
+            new Addenda('1', 'name1'),
+            new Addenda('2', 'name2'),
         ];
-    
+
         $phrases = [
-            new Phrase(
-                '1',
-                '1',
-                null,
-                null,
-            ),
+            new Phrase('1', '1', null, null),
         ];
-    
+
         $documentFEL = new GeneralBill(
             $generalData,
             $generalIssuer,
             $generalCustomer,
             new FELPhrases($phrases),
-            $Items,
-            $Totals,
+            $felItems,
+            $totals,
             null
         );
-    
-        // echo 'GeneralBill XML generator';
-        // echo "\n";
-        // echo $documentFEL->generateXML();
-    
+
         try {
             $result = $documentFEL->generateXML();
             $action = FELCertifiy::getInstance()
                 ->setBody($result)
                 ->submit();
-                echo "XML enviado exitosamente: " . $action['body'];
+            // echo "XML enviado exitosamente: " . $action['body'];
+            $response = json_decode($action['body'], true);
+
+            $currentDate = new \DateTime('now', new \DateTimeZone('-6:00'));
+            $formattedDate = $currentDate->format('Y-m-d\TH:i:sP');
+
+            // Datos para cancelar el documento
+            $cancelDocument = new CancelBill(
+                new FELCancel(
+                    $formattedDate,   // Fecha actual en formato correcto
+                    '11201169K', // ID del usuario del emisor
+                    $generalData->getIssueDateTime(),           // Fecha del documento original
+                    'CF',
+                    $response['uuid'],          
+                    'test'                      
+                )
+            );
+
+            $resultCancel = $cancelDocument->generateAnnulationXML();
+            // echo "XML enviado exitosamente: " . $resultCancel;
+            $action = FELCertifiy::getInstance()
+                ->setBody($resultCancel)
+                ->submit();
+            echo "Factura cancelada" . $action['body'];
         } catch (\Exception $e) {
-            // Manejo de errores
             echo 'Error: ' . $e->getMessage();
         }
     }
