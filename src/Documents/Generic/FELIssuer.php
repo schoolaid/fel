@@ -11,7 +11,7 @@ class FELIssuer implements GeneratesXML
 {
     use HasXML;
     public function __construct(
-        private Issuer $issuer,
+        public Issuer $issuer,
         private FELAddress $genralAddress,
         private IVAAffiliationType $ivaAffiliationType
     ) {}

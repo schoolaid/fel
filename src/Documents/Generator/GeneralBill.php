@@ -31,6 +31,42 @@ class GeneralBill extends FELDocument {
             $this->totals
         ];
     }
+
+    public function getGeneralData(): GeneralData
+    {
+        return $this->generalData;
+    }
+
+    public function getIssuer(): FELIssuer
+    {
+        return $this->issuer;
+    }
+
+    public function getCustomer(): FELCustomer
+    {
+        return $this->customer;
+    }
+
+    public function getPhrases(): FELPhrases
+    {
+        return $this->phrases;
+    }
+
+    public function getItems(): FELItems
+    {
+        return $this->items;
+    }
+
+    public function getTotals(): FELTotals
+    {
+        return $this->totals;
+    }
+
+    public function getAddendas(): ?FELAddendas
+    {
+        return $this->addendas;
+    }
+
 }
 
 // TODO'S 

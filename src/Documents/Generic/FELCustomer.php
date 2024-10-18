@@ -11,7 +11,7 @@ class FELCustomer implements GeneratesXML
     use HasXML;
 
     public function __construct(
-        private Customer $customer,
+        public Customer $customer,
         private FELAddress $Address
     ) {}
 

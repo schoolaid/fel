@@ -1,12 +1,11 @@
 <?php
 namespace Tests\Feature;
 
-use PHPUnit\Runner\Baseline\Issue;
+use SimpleXMLElement;
 use Tests\BaseTestCase;
 use SchoolAid\FEL\Models\Item;
 use SchoolAid\FEL\Models\Issuer;
 use SchoolAid\FEL\Models\Phrase;
-use SchoolAid\FEL\Models\Addenda;
 use SchoolAid\FEL\Models\Address;
 use SchoolAid\FEL\Models\Customer;
 use SchoolAid\FEL\Enum\AddressType;
@@ -14,6 +13,7 @@ use SchoolAid\FEL\Actions\FELCertifiy;
 use SchoolAid\FEL\Enum\IVAAffiliationType;
 use SchoolAid\FEL\Enum\ProductServiceType;
 use SchoolAid\FEL\Documents\Generic\FELItems;
+use SchoolAid\FEL\Documents\Generic\FELCancel;
 use SchoolAid\FEL\Documents\Generic\FELIssuer;
 use SchoolAid\FEL\Documents\Generic\FELTotals;
 use SchoolAid\FEL\Documents\Generic\FELAddress;
@@ -22,130 +22,222 @@ use SchoolAid\FEL\Documents\Generic\FELCustomer;
 use SchoolAid\FEL\Documents\Bill\BillGeneralData;
 use SchoolAid\FEL\Documents\Generator\CancelBill;
 use SchoolAid\FEL\Documents\Generator\GeneralBill;
-use SchoolAid\FEL\Documents\Generic\FELCancel;
+
+// Definimos las constantes comunes
+const DEFAULT_ADDRESS = [
+    'street'     => '14 avenida A',
+    'zipcode'    => '01006',
+    'city'       => 'Guatemala',
+    'department' => 'Guatemala',
+    'country'    => 'GT',
+];
+
+// Funcion para crear una dirección
+function createAddress(array $addressData, $type): FELAddress
+{
+    return new FELAddress(
+        new Address(
+            $addressData['street'],
+            $addressData['zipcode'],
+            $addressData['city'],
+            $addressData['department'],
+            $addressData['country']
+        ),
+        $type
+    );
+}
+
+// Funcion para crear un emisor
+function createIssuer(): FELIssuer
+{
+    return new FELIssuer(
+        new Issuer(
+            'issuer@test.com',
+            1,
+            '11201169K', //NIT
+            'Comercial Name',
+            'Issuer Name'
+        ),
+        createAddress(DEFAULT_ADDRESS, AddressType::Issuer),
+        IVAAffiliationType::General
+    );
+}
+
+// Funcion para crear un cliente
+function createCustomer(): FELCustomer
+{
+    return new FELCustomer(
+        new Customer(
+            'CF',
+            'customer@test.com',
+            'Customer Name',
+            null
+        ),
+        createAddress(DEFAULT_ADDRESS, AddressType::Customer)
+    );
+}
+
+// Funcion para crear items
+function createItems(): array
+{
+    return [
+        new Item(
+            '1',
+            'B',
+            1,
+            'UND',
+            'Producto de Prueba',
+            100.00,
+            100.00,
+            0.00,
+            100.00
+        ),
+        new Item(
+            '2',
+            'B',
+            1,
+            'UND',
+            'Producto de Prueba 2',
+            100.00,
+            100.00,
+            0.00,
+            100.00
+        ),
+    ];
+}
+
+// Funcion principal para generar el documento
+function generateDocument(): array
+{
+    $generalData     = new BillGeneralData();
+    $generalIssuer   = createIssuer();
+    $generalCustomer = createCustomer();
+    $items           = createItems();
+
+    $felItems = new FELItems($items, ProductServiceType::Product);
+    $totals   = new FELTotals($items);
+
+    $phrases = [
+        new Phrase('1', '1', null, null),
+    ];
+    $generalPhrases = new FELPhrases($phrases);
+
+    return [
+        $generalData,
+        $generalIssuer,
+        $generalCustomer,
+        $generalPhrases,
+        $felItems,
+        $totals,
+        null,
+    ];
+}
+
+// Funcion para crear generalBill
+function createGeneralBill(): GeneralBill
+{
+    $document = new GeneralBill(...generateDocument());
+
+    return $document;
+}
+
+//Funcion para crear FelCancel
+function createFelCancel($uuid, $generateDocument): CancelBill
+{
+    $currentDate   = new \DateTime('now', new \DateTimeZone('-6:00'));
+    $formattedDate = $currentDate->format('Y-m-d\TH:i:sP');
+
+    $generalData = $generateDocument->getGeneralData();
+
+    $issuerNit   = $generateDocument->getIssuer()->issuer->getIssuerNit();
+    $customerNit = $generateDocument->getCustomer()->customer->getTaxId();
+
+    return new CancelBill(
+        new FELCancel(
+            $formattedDate, // Fecha actual en formato correcto
+            $issuerNit, // ID del usuario del emisor
+            $generalData->getIssueDateTime(), // Fecha del documento original
+            $customerNit,
+            $uuid,
+            'test'
+        )
+    );
+}
+
+// Funcion auxiliar para validar la existencia de elementos en el XML
+function validateXmlElement(SimpleXMLElement $xml, string $xpath): void
+{
+    expect($xml->xpath($xpath))->not->toBeEmpty();
+}
 
 class BillTest extends BaseTestCase
 {
     /**
-     * Tes for bill
-     *
+     * Test for bill generation and cancellation
      */
-
-    public function testExample()
+    public function testBillGenerationAndCancellation()
     {
-        $generalData   = new BillGeneralData();
-        $generalIssuer = new FELIssuer(
-            new Issuer(
-                'issuer@test.com',
-                1,
-                '11201169K',
-                'Comercial Name',
-                'Issuer Name'
-            ),
-            new FELAddress(new Address(
-                '14 avenida A',
-                '01006',
-                'Guatemala',
-                'Guatemala',
-                'GT'
-            ), AddressType::Issuer),
-            IVAAffiliationType::General
-        );
 
-        $generalCustomer = new FELCustomer(
-            new Customer(
-                'CF',
-                'customer@test.com',
-                'Customer Name',
-                null
-            ),
-            new FELAddress(new Address(
-                '14 avenida A',
-                '01006',
-                'Guatemala',
-                'Guatemala',
-                'GT'
-            ), AddressType::Customer)
-        );
-
-        $items = [
-            new Item(
-                '1',
-                'B',
-                1,
-                'UND',
-                'Producto de Prueba',
-                100.00,
-                100.00,
-                0.00,
-                100.00
-            ),
-            new Item(
-                '2',
-                'B',
-                1,
-                'UND',
-                'Producto de Prueba 2',
-                100.00,
-                100.00,
-                0.00,
-                100.00
-            ),
-        ];
-
-        $felItems = new FELItems($items, ProductServiceType::Product);
-        $totals   = new FELTotals($items);
-
-        $addendas = [
-            new Addenda('1', 'name1'),
-            new Addenda('2', 'name2'),
-        ];
-
-        $phrases = [
-            new Phrase('1', '1', null, null),
-        ];
-
-        $documentFEL = new GeneralBill(
-            $generalData,
-            $generalIssuer,
-            $generalCustomer,
-            new FELPhrases($phrases),
-            $felItems,
-            $totals,
-            null
-        );
+        $documentFEL = createGeneralBill();
 
         try {
             $result = $documentFEL->generateXML();
+            $xml    = new SimpleXMLElement($result);
+
+            $elementsToValidate = [
+                '//dte:Totales',
+                '//dte:TotalImpuestos',
+                '//dte:TotalImpuesto',
+                '//dte:GranTotal',
+                '//dte:Items',
+                '//dte:Item',
+                '//dte:Impuestos',
+                '//dte:Impuesto',
+                '//dte:Emisor',
+                '//dte:Receptor',
+                '//dte:DatosGenerales',
+                '//dte:DireccionEmisor',
+                '//dte:DireccionReceptor',
+            ];
+
+            // Validar la existencia de cada elemento
+            foreach ($elementsToValidate as $xpath) {
+                validateXmlElement($xml, $xpath);
+            }
+
+            // Validar el valor de GranTotal
+            $granTotalNodes = $xml->xpath('//dte:GranTotal');
+            if (!empty($granTotalNodes)) {
+                $granTotal = (float) $granTotalNodes[0];
+                expect($granTotal)->toBeGreaterThanOrEqual(0);
+            } else {
+                throw new \Exception('El elemento GranTotal no se encontró en el XML.');
+            }
+
+            // Certificando Documento
             $action = FELCertifiy::getInstance()
                 ->setBody($result)
                 ->submit();
-            // echo "XML enviado exitosamente: " . $action['body'];
+
+            // Decode response
             $response = json_decode($action['body'], true);
+            echo "UUID generado exitosamente: " . $response['uuid'];
 
-            $currentDate = new \DateTime('now', new \DateTimeZone('-6:00'));
-            $formattedDate = $currentDate->format('Y-m-d\TH:i:sP');
+            expect($response)->toHaveKey('uuid');
 
-            // Datos para cancelar el documento
-            $cancelDocument = new CancelBill(
-                new FELCancel(
-                    $formattedDate,   // Fecha actual en formato correcto
-                    '11201169K', // ID del usuario del emisor
-                    $generalData->getIssueDateTime(),           // Fecha del documento original
-                    'CF',
-                    $response['uuid'],          
-                    'test'                      
-                )
-            );
+            $cancelDocument = createFelCancel($response['uuid'], $documentFEL);
+            $resultCancel   = $cancelDocument->generateAnnulationXML();
+            echo "XML enviado exitosamente: " . $resultCancel;
 
-            $resultCancel = $cancelDocument->generateAnnulationXML();
             // echo "XML enviado exitosamente: " . $resultCancel;
             $action = FELCertifiy::getInstance()
                 ->setBody($resultCancel)
                 ->submit();
-            echo "Factura cancelada" . $action['body'];
+
+                echo "Documento anulado exitosamente: " . $action['body'];
         } catch (\Exception $e) {
             echo 'Error: ' . $e->getMessage();
         }
     }
+
 }
