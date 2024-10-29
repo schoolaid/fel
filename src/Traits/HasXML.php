@@ -8,11 +8,21 @@ trait HasXML
         $xw = xmlwriter_open_memory();
         xmlwriter_set_indent($xw, 1);
 
+        // xmlwriter_start_document($xw, '1.0', 'UTF-8');
         xmlwriter_start_element($xw, $rootElement);
 
         foreach ($attributes as $key => $value) {
             xmlwriter_start_attribute($xw, $key);
-            xmlwriter_text($xw, $value);
+            if (is_array($value)) {
+                foreach ($value as $subElementName => $subElementValue) {
+                    xmlwriter_start_element($xw, $subElementName);
+                    xmlwriter_text($xw, $subElementValue);
+                    xmlwriter_end_element($xw);
+                }
+            } else {
+                xmlwriter_text($xw, $value);
+
+            }
             xmlwriter_end_attribute($xw);
         }
 
@@ -25,7 +35,6 @@ trait HasXML
                 xmlwriter_start_element($xw, $subElementName);
                 if (is_string($subElementValue)) {
                     xmlwriter_write_raw($xw, $subElementValue);
-
                 } else {
                     xmlwriter_text($xw, $subElementValue);
                 }

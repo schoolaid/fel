@@ -7,7 +7,7 @@ class Customer
         private string $taxId,
         private string $emailCustomer,
         private string $customerName,
-        private string $specialType
+        private ?string $specialType
     ) {}
 
     public function getTaxId(): string
@@ -25,7 +25,7 @@ class Customer
         return $this->customerName;
     }
 
-    public function getSpecialType(): string
+    public function getSpecialType(): ?string
     {
         return $this->specialType;
     }

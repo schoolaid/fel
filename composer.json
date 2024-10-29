@@ -3,7 +3,8 @@
     "license": "MIT",
     "autoload": {
         "psr-4": {
-            "SchoolAid\\FEL\\": "src/"
+            "SchoolAid\\FEL\\": "src/",
+            "Tests\\": "tests/"
         }
     },
     "authors": [
@@ -13,11 +14,19 @@
         }
     ],
     "require-dev": {
-        "pestphp/pest": "^3.0"
+        "pestphp/pest": "^3.4",
+        "orchestra/testbench": "^9.5",
+        "pestphp/pest-plugin-laravel": "^3.0"
     },
     "config": {
         "allow-plugins": {
             "pestphp/pest-plugin": true
         }
+    },
+    "require": {
+        "guzzlehttp/guzzle": "^7.9",
+        "laravel/framework": "*",
+        "illuminate/support": "*",
+        "vlucas/phpdotenv": "^5.6"
     }
 }

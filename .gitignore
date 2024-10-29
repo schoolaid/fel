@@ -1,1 +1,4 @@
 /vendor
+src/*.xml
+*.xml
+.env
