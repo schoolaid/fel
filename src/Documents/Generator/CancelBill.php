@@ -16,4 +16,9 @@ class CancelBill extends FELDocument
             $this->cancel
         ];
     }
+
+    public function getCancel(): FELCancel
+    {
+        return $this->cancel;
+    }
 }
