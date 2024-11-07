@@ -3,7 +3,7 @@
 namespace SchoolAid\FEL\Contracts;
 
 use Illuminate\Support\Collection;
-use SchoolAid\FEL\Documents\InvoiceServiceResponse;
+use SchoolAid\FEL\Responses\InvoiceServiceResponse;
 
 interface InvoiceServiceInterface
 {

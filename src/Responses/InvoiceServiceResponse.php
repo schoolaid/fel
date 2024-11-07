@@ -1,5 +1,5 @@
 <?php
-namespace SchoolAid\FEL\Documents;
+namespace SchoolAid\FEL\Responses;
 
 class InvoiceServiceResponse
 {
