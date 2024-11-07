@@ -4,7 +4,7 @@ namespace SchoolAid\FEL\Services;
 use SchoolAid\FEL\Actions\FELCertifiy;
 use SchoolAid\FEL\Documents\Generator\GeneralBill;
 
-class FELService
+class FELCertifyService
 {
     public function __construct(
         private GeneralBill $documentFEL
