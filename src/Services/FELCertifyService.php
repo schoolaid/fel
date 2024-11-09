@@ -6,20 +6,33 @@ use SchoolAid\FEL\Documents\Generator\GeneralBill;
 
 class FELCertifyService
 {
-    public function __construct(
-        private GeneralBill $documentFEL
-    )
-    {}
+    private GeneralBill $documentFEL;
 
-    public function processUnified () {
+    public function __construct(GeneralBill $documentFEL)
+    {
+        $this->documentFEL = $documentFEL;
+    }
+
+    public static function processUnified(GeneralBill $documentFEL): array
+    {
         try {
-            $result = $this->documentFEL->generateXML();
+            $xmlBody = $documentFEL->generateXML();
+
             $action = FELCertifiy::getInstance()
-                ->setBody($result)
+                ->setBody($xmlBody)
                 ->submit();
-            return $action['body'];
+
+            $response = json_decode($action['body'], true);
+
+            return $response ?? [];
+
         } catch (\Exception $e) {
-            echo 'Error: ' . $e->getMessage();
+            throw new \RuntimeException('Error al procesar el documento FEL: ' . $e->getMessage(), 0, $e);
         }
+    }
+
+    public function process(): array
+    {
+        return self::processUnified($this->documentFEL);
     }
 }

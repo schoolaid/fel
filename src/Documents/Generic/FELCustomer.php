@@ -15,6 +15,11 @@ class FELCustomer implements GeneratesXML
         private FELAddress $Address
     ) {}
 
+    public function getCustomer(): Customer
+    {
+        return $this->customer;
+    }
+
     public function asXML(): string
     {
         $attributes = [

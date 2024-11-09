@@ -12,7 +12,7 @@ class FELItems implements GeneratesXML
     use HasXML;
     public function __construct(
         private array $items,
-        private ProductServiceType $productServiceType,
+        // private ProductServiceType $productServiceType,
     ) {}
 
     public function asXML(): string

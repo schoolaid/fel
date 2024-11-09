@@ -1,11 +1,13 @@
 <?php
 namespace SchoolAid\FEL\Models;
 
+use SchoolAid\FEL\Enum\ProductServiceType;
+
 class Item
 {
     public function __construct(
         private string $lineNumber,
-        private string $productOrService,
+        private ProductServiceType $productOrService,
         private int $quantity,
         private string $unitOfMeasurement,
         private string $description,
@@ -20,7 +22,7 @@ class Item
         return $this->lineNumber;
     }
 
-    public function getProductOrService(): string
+    public function getProductOrService(): ProductServiceType
     {
         return $this->productOrService;
     }
