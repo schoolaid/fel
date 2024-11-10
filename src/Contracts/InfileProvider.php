@@ -1,11 +1,11 @@
 <?php
 namespace SchoolAid\FEL\Contracts;
 
+use SchoolAid\FEL\Models\IssuerCredentials;
 use SchoolAid\FEL\Documents\Generic\FELItems;
 use SchoolAid\FEL\Documents\Generic\FELIssuer;
 use SchoolAid\FEL\Documents\Generic\FELTotals;
 use SchoolAid\FEL\Documents\Generic\FELCustomer;
-use SchoolAid\FEL\Models\IssuerCredentials;
 
 interface InfileProvider
 {

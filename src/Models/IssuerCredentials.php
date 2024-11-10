@@ -28,9 +28,9 @@ class IssuerCredentials
     public function toArray(): array
     {
         return [
-            'infileUser' => $this->infileUser,
+            'infileUser'     => $this->infileUser,
             'infilePassword' => $this->infilePassword,
-            'infileKey' => $this->infileKey
+            'infileKey'      => $this->infileKey,
         ];
     }
 }

@@ -1,13 +1,10 @@
 <?php
-
 namespace SchoolAid\FEL\Contracts;
 
 use Illuminate\Support\Collection;
-use SchoolAid\FEL\Responses\InvoiceServiceResponse;
 
 interface InvoiceServiceInterface
 {
-    public function generate(): InvoiceServiceResponse;
+    public function generate(): Collection;
     public function cancel(string $billUuid, string $billDate): Collection;
-    // public function download(int $billId): mixed;
 }
