@@ -7,7 +7,7 @@ class Item
 {
     public function __construct(
         private string $lineNumber,
-        private ProductServiceType $productOrService,
+        private string $productOrService,
         private int $quantity,
         private string $unitOfMeasurement,
         private string $description,
@@ -22,7 +22,7 @@ class Item
         return $this->lineNumber;
     }
 
-    public function getProductOrService(): ProductServiceType
+    public function getProductOrService(): string
     {
         return $this->productOrService;
     }

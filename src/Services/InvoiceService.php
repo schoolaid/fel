@@ -1,5 +1,5 @@
 <?php
-namespace SchoolAid\FEL\Documents;
+namespace SchoolAid\FEL\Services;
 
 use SchoolAid\FEL\Models\Phrase;
 use Illuminate\Support\Collection;

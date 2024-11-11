@@ -2,13 +2,14 @@
 namespace SchoolAid\FEL\Services;
 
 use SchoolAid\FEL\Actions\FELCertifiy;
+use SchoolAid\FEL\Documents\Generator\CancelBill;
 use SchoolAid\FEL\Documents\Generator\GeneralBill;
 
 class FELCertifyService
 {
-    private GeneralBill $documentFEL;
+    private GeneralBill|CancelBill $documentFEL;
 
-    public function __construct(GeneralBill $documentFEL)
+    public function __construct(GeneralBill|CancelBill $documentFEL)
     {
         $this->documentFEL = $documentFEL;
     }
