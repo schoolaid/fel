@@ -14,7 +14,7 @@ class FELCertifyService
         $this->documentFEL = $documentFEL;
     }
 
-    public static function processUnified(GeneralBill $documentFEL): array
+    public static function processUnified(GeneralBill|CancelBill $documentFEL): array
     {
         try {
             $xmlBody = $documentFEL->generateXML();
