@@ -11,6 +11,7 @@ use SchoolAid\FEL\Documents\Bill\BillGeneralData;
 use SchoolAid\FEL\Documents\Generator\CancelBill;
 use SchoolAid\FEL\Documents\Generator\GeneralBill;
 use SchoolAid\FEL\Contracts\InvoiceServiceInterface;
+use SchoolAid\FEL\Responses\InvoiceServiceResponse;
 
 class InvoiceService implements InvoiceServiceInterface
 {
@@ -49,10 +50,10 @@ class InvoiceService implements InvoiceServiceInterface
             null//Addendas goes here
         );
 
-        $certify = FELCertifyService::processUnified($document);
+        $credentials = $this->provider->issuerCredentials();
+        $certify = FELCertifyService::processUnified($document, $credentials);
 
         return collect($certify);
-        // return new InvoiceServiceResponse(true, 'bill_issued', $certify);
     }
 
     public function cancel(string $billUuid, string $billDate): Collection
@@ -77,7 +78,8 @@ class InvoiceService implements InvoiceServiceInterface
             $cancelData
         );
 
-        $certify = FELCertifyService::processUnified($document);
+        $credentials = $this->provider->issuerCredentials();
+        $certify = FELCertifyService::processUnified($document, $credentials);
 
         return collect($certify);
     }
