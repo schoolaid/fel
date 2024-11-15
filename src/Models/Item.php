@@ -1,6 +1,8 @@
 <?php
 namespace SchoolAid\FEL\Models;
 
+use SchoolAid\FEL\Enum\ProductServiceType;
+
 class Item
 {
     public function __construct(

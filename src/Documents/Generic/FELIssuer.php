@@ -16,6 +16,11 @@ class FELIssuer implements GeneratesXML
         private IVAAffiliationType $ivaAffiliationType
     ) {}
 
+    public function getIssuer(): Issuer
+    {
+        return $this->issuer;
+    }
+
     public function asXML(): string
     {
         $attributes = [

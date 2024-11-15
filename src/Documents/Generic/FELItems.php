@@ -12,21 +12,20 @@ class FELItems implements GeneratesXML
     use HasXML;
     public function __construct(
         private array $items,
-        private ProductServiceType $productServiceType,
+        // private ProductServiceType $productServiceType,
     ) {}
 
     public function asXML(): string
     {
         $itemsSubElements = [];
-        $count            = 0;
 
         foreach ($this->items as $item) {
 
             $tax = new FELTaxDetail($item->getTotal(), TaxNames::IVA);
 
             $attributes = [
-                ItemXML::LineNumber->value       => ++$count,
-                ItemXML::ProductOrService->value => $this->productServiceType->value,
+                ItemXML::LineNumber->value       => $item->getLineNumber(),
+                ItemXML::ProductOrService->value => $item->getProductOrService(),
             ];
 
             $subElements = [
