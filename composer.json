@@ -1,5 +1,6 @@
 {
     "name": "schoolaid/fel",
+    "description": "Fel integration",
     "license": "MIT",
     "autoload": {
         "psr-4": {
