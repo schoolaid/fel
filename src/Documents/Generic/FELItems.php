@@ -5,15 +5,42 @@ use SchoolAid\FEL\Enum\ItemXML;
 use SchoolAid\FEL\Enum\TaxNames;
 use SchoolAid\FEL\Traits\HasXML;
 use SchoolAid\FEL\Contracts\GeneratesXML;
-use SchoolAid\FEL\Enum\ProductServiceType;
 
 class FELItems implements GeneratesXML
 {
     use HasXML;
+    private FELTaxTotal $taxTotals;
+    private float $grandTotal;
+
     public function __construct(
-        private array $items,
-        // private ProductServiceType $productServiceType,
-    ) {}
+        private array $items
+    ) {
+        $this->calculateTaxesAndTotals();
+    }
+
+
+    private function calculateTaxesAndTotals(): void
+    {
+        $taxTotals = [];
+        $grandTotal = 0;
+
+        foreach ($this->items as $item) {
+            $tax = new FELTaxDetail($item->getTotal(), TaxNames::IVA);
+            $taxTotals[] = $tax->calculateTaxAmounts();
+
+            $grandTotal += $item->getTotal();
+        }
+
+        $this->taxTotals = new FELTaxTotal($taxTotals);
+        $this->grandTotal = $grandTotal;
+    }
+
+    public function getTotals(): FELTotals
+    {
+        return new FELTotals($this->grandTotal, $this->taxTotals);
+    }
+
+
 
     public function asXML(): string
     {
