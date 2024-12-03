@@ -13,7 +13,7 @@ class FELTotals implements GeneratesXML
         private float $grandTotal,
         private FELTaxTotal $taxTotals
     ) {
-        $this->taxTotals = $this->calculateTaxes();
+        // $this->taxTotals = $this->calculateTaxes();
     }
 
     public function asXML(): string
