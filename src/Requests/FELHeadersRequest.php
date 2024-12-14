@@ -10,12 +10,12 @@ class FELHeadersRequest
     public static function build(IssuerCredentials $credentials): array
     {
         return [
-            FELHeaders::UsuarioFirma->value => $credentials->getInfileUser(),
-            FELHeaders::LlaveFirma->value   => $credentials->getInfileKey(),
-            FELHeaders::UsuarioApi->value   => $credentials->getInfileUser(),
-            FELHeaders::LlaveApi->value     => $credentials->getInfilePassword(),
-            FELHeaders::Usuario->value      => $credentials->getInfileUser(),
-            FELHeaders::Llave->value        => $credentials->getInfileKey(),
+            FELHeaders::UsuarioFirma->value => $credentials->getUserSignature(),
+            FELHeaders::LlaveFirma->value   => $credentials->getKeySignature(),
+            FELHeaders::UsuarioApi->value   => $credentials->getUserApi(),
+            FELHeaders::LlaveApi->value     => $credentials->getKeyApi(),
+            FELHeaders::Usuario->value      => $credentials->getUser(),
+            FELHeaders::Llave->value        => $credentials->getKey(),
             FELHeaders::ContentType->value  => 'application/xml',
         ];
     }

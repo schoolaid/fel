@@ -10,7 +10,7 @@ abstract class GeneralData implements IGeneralData
 {
     protected string|null $issueDateTime = null;
 
-    public function __construct(string|null $issueDateTime = null)
+    public function __construct(string | null $issueDateTime = null)
     {
         $this->issueDateTime = $issueDateTime;
     }
@@ -21,6 +21,7 @@ abstract class GeneralData implements IGeneralData
             return $this->issueDateTime;
         }
         $date = new DateTime('now', new DateTimeZone('America/Guatemala'));
+
         return $date->format('Y-m-d\TH:i:sP');
     }
 
