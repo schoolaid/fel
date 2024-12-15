@@ -9,16 +9,23 @@ use SchoolAid\FEL\Enum\IVAAffiliationType;
 
 class FELIssuer implements GeneratesXML
 {
+
     use HasXML;
     public function __construct(
         public Issuer $issuer,
         private FELAddress $genralAddress,
-        private IVAAffiliationType $ivaAffiliationType
+        private IVAAffiliationType $ivaAffiliationType,
+        private FELPhrases | null $felPhrases = null
     ) {}
 
     public function getIssuer(): Issuer
     {
         return $this->issuer;
+    }
+
+    public function getPhrases(): FELPhrases | null
+    {
+        return $this->felPhrases;
     }
 
     public function asXML(): string

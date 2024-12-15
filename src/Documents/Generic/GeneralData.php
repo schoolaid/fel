@@ -8,9 +8,20 @@ use SchoolAid\FEL\Contracts\IGeneralData;
 
 abstract class GeneralData implements IGeneralData
 {
+    protected string|null $issueDateTime = null;
+
+    public function __construct(string | null $issueDateTime = null)
+    {
+        $this->issueDateTime = $issueDateTime;
+    }
+
     public function getIssueDateTime(): string
     {
+        if ($this->issueDateTime) {
+            return $this->issueDateTime;
+        }
         $date = new DateTime('now', new DateTimeZone('America/Guatemala'));
+
         return $date->format('Y-m-d\TH:i:sP');
     }
 

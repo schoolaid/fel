@@ -12,7 +12,7 @@ class FELTaxDetail implements GeneratesXML
 
     public function __construct(
         private float $amount,
-        private TaxNames $tax 
+        private TaxNames $tax
     ) {}
 
     public function calculateTaxAmounts(): array
@@ -22,7 +22,7 @@ class FELTaxDetail implements GeneratesXML
         $taxableAmount = $calculatedTax;
 
         return [
-            'shortName' => $this->tax->value,
+            'shortName'     => $this->tax->value,
             'taxableAmount' => $taxableAmount,
             'taxAmount'     => $taxAmount,
         ];
@@ -30,9 +30,9 @@ class FELTaxDetail implements GeneratesXML
 
     public function asXML(): string
     {
-        $taxAmounts = $this->calculateTaxAmounts();
+        $taxAmounts    = $this->calculateTaxAmounts();
         $taxableAmount = $taxAmounts['taxableAmount'];
-        $taxAmount = $taxAmounts['taxAmount'];
+        $taxAmount     = $taxAmounts['taxAmount'];
 
         $subElements = [
             TaxDetailXML::ShortName->value       => $this->tax->value,
