@@ -6,6 +6,7 @@ use SchoolAid\FEL\Traits\HasXML;
 use SchoolAid\FEL\Enum\IssuerXML;
 use SchoolAid\FEL\Contracts\GeneratesXML;
 use SchoolAid\FEL\Enum\IVAAffiliationType;
+use SchoolAid\FEL\Models\Phrase;
 
 class FELIssuer implements GeneratesXML
 {
@@ -15,7 +16,7 @@ class FELIssuer implements GeneratesXML
         public Issuer $issuer,
         private FELAddress $genralAddress,
         private IVAAffiliationType $ivaAffiliationType,
-        private FELPhrases | null $felPhrases = null
+        private Phrase | null $felPhrases = null
     ) {}
 
     public function getIssuer(): Issuer
