@@ -11,7 +11,6 @@ use SchoolAid\FEL\Documents\Bill\BillGeneralData;
 use SchoolAid\FEL\Documents\Generator\CancelBill;
 use SchoolAid\FEL\Documents\Generator\GeneralBill;
 use SchoolAid\FEL\Contracts\InvoiceServiceInterface;
-use SchoolAid\FEL\Responses\InvoiceServiceResponse;
 
 class InvoiceService implements InvoiceServiceInterface
 {
@@ -38,7 +37,7 @@ class InvoiceService implements InvoiceServiceInterface
         $customerData   = $this->provider->customerInfo();
         $generalPhrases = new FELPhrases($phrases);
         $itemsData      = $this->provider->itemsInfo();
-        $totalsData     = $this->provider->totalsInfo();
+        $totalsData     = $this->provider->itemsInfo()->getTotals();
 
         $document = new GeneralBill(
             $generalData,
@@ -51,7 +50,7 @@ class InvoiceService implements InvoiceServiceInterface
         );
 
         $credentials = $this->provider->issuerCredentials();
-        $certify = FELCertifyService::processUnified($document, $credentials);
+        $certify     = FELCertifyService::processUnified($document, $credentials);
 
         return collect($certify);
     }
@@ -79,7 +78,7 @@ class InvoiceService implements InvoiceServiceInterface
         );
 
         $credentials = $this->provider->issuerCredentials();
-        $certify = FELCertifyService::processUnified($document, $credentials);
+        $certify     = FELCertifyService::processUnified($document, $credentials);
 
         return collect($certify);
     }

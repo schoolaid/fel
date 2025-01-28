@@ -5,32 +5,41 @@ class IssuerCredentials
 {
 
     public function __construct(
-        public string $infileUser,
-        public string $infilePassword,
-        public string $infileKey
+        public string $userSignature,
+        public string $keySignature,
+        public string $userApi,
+        public string $keyApi,
+        public string $user,
+        public string $key
     ) {}
 
-    public function getInfileUser(): string
+    public function getUserSignature(): string
     {
-        return $this->infileUser;
+        return $this->userSignature;
+    }   
+
+    public function getKeySignature(): string
+    {
+        return $this->keySignature;
     }
 
-    public function getInfilePassword(): string
+    public function getUserApi(): string
     {
-        return $this->infilePassword;
+        return $this->userApi;
     }
 
-    public function getInfileKey(): string
+    public function getKeyApi(): string
     {
-        return $this->infileKey;
+        return $this->keyApi;
     }
 
-    public function toArray(): array
+    public function getUser(): string
     {
-        return [
-            'infileUser'     => $this->infileUser,
-            'infilePassword' => $this->infilePassword,
-            'infileKey'      => $this->infileKey,
-        ];
+        return $this->user;
+    }
+
+    public function getKey(): string
+    {
+        return $this->key;
     }
 }
