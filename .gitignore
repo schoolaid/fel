@@ -2,3 +2,4 @@
 src/*.xml
 *.xml
 .env
+/.idea

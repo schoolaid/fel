@@ -1,0 +1,225 @@
+<?php
+
+namespace Tests\Unit;
+
+use DateTime;
+use DOMException;
+use Schoolaid\Fel\Actions\FelCancel;
+use Schoolaid\Fel\Actions\FelCertify;
+use Schoolaid\Fel\Certification\FelCertificationService;
+use Schoolaid\Fel\Certification\Responses\CancellationResponse;
+use Schoolaid\Fel\Certification\Responses\CertificationResponse;
+use Schoolaid\Fel\Config\FelConfig;
+use Schoolaid\Fel\Enums\CurrencyEnum;
+use Schoolaid\Fel\Enums\DocumentTypeEnum;
+use Schoolaid\Fel\Enums\IVAAffiliationTypeEnum;
+use Schoolaid\Fel\Models\Cancellation;
+use Schoolaid\Fel\Models\FelAddenda;
+use Schoolaid\Fel\Models\FelAddress;
+use Schoolaid\Fel\Models\FelIssuer;
+use Schoolaid\Fel\Models\FelItem;
+use Schoolaid\Fel\Models\FelItems;
+use Schoolaid\Fel\Models\FelPhrase;
+use Schoolaid\Fel\Models\FelPhrases;
+use Schoolaid\Fel\Models\FelReceiver;
+use Schoolaid\Fel\Models\FelTotals;
+use Schoolaid\Fel\Models\Invoice;
+use Illuminate\Support\Str;
+use Mockery;
+
+beforeEach(function () {
+    // Cargar variables de entorno desde .env para el test
+    if (file_exists(dirname(__DIR__, 2) . '/.env')) {
+        $dotenv = \Dotenv\Dotenv::createImmutable(dirname(__DIR__, 2));
+        $dotenv->load();
+    }
+
+    // Verificar que las variables de entorno necesarias estén definidas
+    if (empty($_ENV['FEL_PROVIDER']) || empty($_ENV['FEL_USERNAME'])) {
+        $this->markTestSkipped('Variables de entorno para FEL no configuradas. Copie .env.example a .env y configure sus credenciales.');
+    }
+});
+
+afterEach(function () {
+    Mockery::close();
+});
+
+it('can generate cancellation xml', function () {
+    // 1. Arrange
+    $uuid = '12345678-1234-1234-1234-123456789012';
+    $issuerNit = '73023094';
+    $reason = 'Error en datos';
+    $documentDate = '2023-01-15T14:00:00';
+    $cancellationDate = '2023-01-16T10:00:00';
+
+    $config = FelConfig::fromEnv();
+
+    $cancellation = new Cancellation(
+        $uuid,
+        $issuerNit,
+        'CF',
+        $reason,
+        $documentDate,
+        $cancellationDate
+    );
+
+    $felCancel = new FelCancel($cancellation, $config);
+
+    // 2. Act
+    $xml = $felCancel->generateXml();
+
+    // 3. Assert
+    expect($xml)->toBeString()
+        ->and($xml)->toContain('<?xml version="1.0" encoding="UTF-8"?>')
+        ->and($xml)->toContain('<dte:GTAnulacionDocumento')
+        ->and($xml)->toContain($uuid)
+        ->and($xml)->toContain($issuerNit)
+        ->and($xml)->toContain($reason);
+});
+
+it('can execute cancellation', function () {
+    $invoice = createTestInvoice();
+
+    // Obtener la configuración FEL desde variables de entorno
+    $config = FelConfig::fromEnv();
+    $config->setIdentifier(Str::uuid()->toString());
+    // Crear la acción de certificación
+    $certify = new FelCertify($invoice, $config);
+
+    // Ejecutar la certificación
+    $responseInvoice = $certify->execute();
+    // Verificar la respuesta
+    expect($responseInvoice)->toBeInstanceOf(CertificationResponse::class);
+    echo "\n";
+    echo "UUID: " . $responseInvoice->getUuid() . "\n";
+
+    // 2. Fixed dates for consistent testing
+    $cancellationDate = now()->format('Y-m-d\TH:i:s-06:00');
+
+    $cancel = FelCancel::fromParams(
+        $responseInvoice->getUuid(),
+        $invoice->issuer->nit,
+        'CANCELACIÓN',
+        $config,
+        $invoice->receiver->id,
+        $invoice->emissionDateTime,
+        $cancellationDate
+    );
+
+    $response = $cancel->execute();
+
+    // 3. Assert
+    expect($response)->toBeInstanceOf(CancellationResponse::class)
+        ->and($response->isSuccessful())->toBeTrue();
+});
+
+it('can be created from params', function () {
+    // 1. Arrange
+    $uuid = '12345678-1234-1234-1234-123456789012';
+    $issuerNit = '73023094';
+    $reason = 'Error en datos';
+
+    $config = FelConfig::fromEnv();
+
+    // 2. Act
+    $felCancel = FelCancel::fromParams(
+        $uuid,
+        $issuerNit,
+        $reason,
+        $config
+    );
+
+    // 3. Assert
+    expect($felCancel)->toBeInstanceOf(FelCancel::class);
+
+    $cancellation = $felCancel->getCancellation();
+    expect($cancellation)->toBeInstanceOf(Cancellation::class)
+        ->and($cancellation->getDocumentUuid())->toBe($uuid)
+        ->and($cancellation->getNitIssuer())->toBe($issuerNit)
+        ->and($cancellation->getIdReceiver())->toBe('CF')
+        ->and($cancellation->getReason())->toBe($reason);
+});
+
+function createTestInvoice(): Invoice
+{
+    // 1. Create issuer address
+    $issuerAddress = new FelAddress(
+        '15 AVENIDA 5-50 COLONIA VISTA HERMOSA III, EDIFICIO SPAZIO NIVEL 2 OF. 209 ZONA 15',
+        '01001',
+        'GUATEMALA',
+        'GUATEMALA',
+        'GT'
+    );
+
+    // 2. Create issuer
+    $issuer = new FelIssuer(
+        'esevitra@gmail.com',
+        '1',
+        '11201169K',
+        'Demo',
+        IVAAffiliationTypeEnum::General,
+        'Laid Demo',
+        $issuerAddress
+    );
+
+    // 3. Create receiver address
+    $receiverAddress = new FelAddress(
+        'Villa Nueva',
+        '01064',
+        'GUATEMALA',
+        'GUATEMALA',
+        'GT'
+    );
+
+    // 4. Create receiver
+    $receiver = new FelReceiver(
+        'CF',
+        'es.evitra@gmail.com',
+        'Consumidor Final',
+        $receiverAddress
+    );
+
+    // 5. Create phrases
+    $phrase = new FelPhrase(1, 1);
+    $phrases = new FelPhrases([$phrase]);
+
+    // 6. Create item without specific taxes to test automatic calculation
+    $item = new FelItem(
+        1,              // NumeroLinea
+        'S',            // BienOServicio
+        20.0,          // PrecioUnitario
+        'UND',          // UnidadMedida
+        '1 disciplina', // Descripción
+        20,            // Precio
+        1,              // Cantidad
+        0,               // Descuento
+        [],
+        20             // Total
+    );
+
+    // 7. Create collection of items
+    $items = new FelItems([$item]);
+
+    // 8. Create totals (without values, they will be calculated)
+    $totals = new FelTotals(grandTotal: 20);
+
+    // 9. Create addenda
+    $addenda = new FelAddenda(
+        'http://www.sat.gob.gt/face2/ComplementoFiscal',
+        'Orden',
+        'Orden #186, Arellano Sanchinelli, Renata - abril 2025'
+    );
+
+    // 10. Create invoice using enums directly
+    return new Invoice(
+        DocumentTypeEnum::LOCAL_INVOICE,
+        now()->format('Y-m-d\TH:i:s-06:00'),
+        CurrencyEnum::QUETZAL,
+        $issuer,
+        $receiver,
+        $phrases,
+        $items,
+        $totals,
+        $addenda
+    );
+}
