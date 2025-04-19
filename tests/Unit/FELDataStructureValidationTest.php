@@ -18,7 +18,7 @@ use Schoolaid\Fel\Models\FelTotals;
  * Test to validate the data structure based on a FEL XML
  */
 it('correctly builds and stores data structure from FEL XML', function () {
-    // Create data structure based on FEL XML
+    // Create a data structure based on FEL XML
 
     // 1. Issuer
     $issuer = new FelIssuer(

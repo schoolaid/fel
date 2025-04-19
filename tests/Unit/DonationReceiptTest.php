@@ -21,19 +21,8 @@ use Schoolaid\Fel\Models\FelTotals;
 use Schoolaid\Fel\Models\Invoice;
 use Illuminate\Support\Str;
 
-beforeEach(function () {
-    if (file_exists(dirname(__DIR__, 2) . '/.env')) {
-        $dotenv = \Dotenv\Dotenv::createImmutable(dirname(__DIR__, 2));
-        $dotenv->load();
-    }
-
-    if (empty($_ENV['FEL_PROVIDER']) || empty($_ENV['FEL_USERNAME'])) {
-        $this->markTestSkipped('Variables de entorno para FEL no configuradas. Copie .env.example a .env y configure sus credenciales.');
-    }
-});
-
 it('correctly generates XML for donation receipt without taxes', function () {
-    // 1. Create issuer address
+    // 1. Create an issuer address
     $invoice = createTestInvoice();
     // 10. Generate XML using FelGenerate action
     $generator = new FelGenerate($invoice);
@@ -50,15 +39,15 @@ it('correctly generates XML for donation receipt without taxes', function () {
     dd($xml);
     // 12. Verify that no taxes were generated
 
-    // 13. Check that TotalImpuestos element is empty or not present
+    // 13. Check that the TotalImpuestos element is empty or not present
 });
 
 it( 'can certify an invoice with the FEL service', function () {
-    // 1. Create issuer address
+    // 1. Create an issuer address
     $invoice = createTestInvoice();
 
     // Obtener la configuración FEL desde variables de entorno
-    $config = FelConfig::fromEnv();
+    $config = FelConfig::fromConfig();
     $config->setIdentifier(Str::uuid()->toString());
     // Crear la acción de certificación
     $certify = new FelCertify($invoice, $config);
@@ -77,7 +66,7 @@ it( 'can certify an invoice with the FEL service', function () {
 
 function createTestInvoice(): Invoice
 {
-    // 1. Create issuer address
+    // 1. Create an issuer address
     $issuerAddress = new FelAddress(
         '15 AVENIDA 5-50 COLONIA VISTA HERMOSA III, EDIFICIO SPAZIO NIVEL 2 OF. 209 ZONA 15',
         '01001',
@@ -97,7 +86,7 @@ function createTestInvoice(): Invoice
         $issuerAddress
     );
 
-    // 3. Create receiver address
+    // 3. Create a receiver address
     $receiverAddress = new FelAddress(
         'Villa Nueva',
         '01064',
@@ -118,7 +107,7 @@ function createTestInvoice(): Invoice
     $phrase = new FelPhrase(4,4);
     $phrases = new FelPhrases([$phrase]);
 
-    // 6. Create item without specific taxes to test automatic calculation
+    // 6. Create an item without specific taxes to test automatic calculation
     $item = new FelItem(
         1,              // NumeroLinea
         'S',            // BienOServicio
@@ -132,7 +121,7 @@ function createTestInvoice(): Invoice
         2             // Total
     );
 
-    // 7. Create collection of items
+    // 7. Create a collection of items
     $items = new FelItems([$item]);
 
     // 8. Create totals (without values, they will be calculated)
@@ -145,7 +134,7 @@ function createTestInvoice(): Invoice
         'Orden #186, Arellano Sanchinelli, Renata - abril 2025'
     );
 
-    // 10. Create invoice using enums directly
+    // 10. Create an invoice using enums directly
     return new Invoice(
         DocumentTypeEnum::DONATION_RECEIPT,
         now()->format('Y-m-d\TH:i:s-06:00'),

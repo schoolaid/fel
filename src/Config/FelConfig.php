@@ -58,19 +58,20 @@ class FelConfig
         string $signatureKey = '',
         array $providerConfig = []
     ) {
-        $this->provider = $provider ?: $_ENV['FEL_PROVIDER'] ?? '';
-        $this->username = $username ?: $_ENV['FEL_USERNAME'] ?? '';
-        $this->apiKey = $apiKey ?: $_ENV['FEL_KEY'] ?? '';
-        $this->signatureKey = $signatureKey ?: $_ENV['FEL_PASSWORD'] ?? '';
+        $config = config('fel');
+        $this->provider = $provider ?: $config['provider'] ?? '';
+        $this->username = $username ?: $config['username'] ?? '';
+        $this->apiKey = $apiKey ?: $config['api_key'] ?? '';
+        $this->signatureKey = $signatureKey ?: $config['signature_key'] ?? '';
 
         if (empty($providerConfig)) {
-            $providerConfig = [
-                'base_url' => $_ENV['FEL_BASE_URL'] ?? '',
-                'certify_url' => $_ENV['FEL_CERTIFY_URL'] ?? '',
-                'status_url' => $_ENV['FEL_STATUS_URL'] ?? '',
-                'cancel_url' => $_ENV['FEL_CANCEL_URL'] ?? '',
-                'timeout' => $_ENV['FEL_TIMEOUT'] ?? 30,
-                'verify_ssl' => $_ENV['FEL_VERIFY_SSL'] ?? true,
+            $providerConfig = $config['provider_config'] ?? [
+                'base_url' => $config['provider_config']['base_url'] ?? '',
+                'certify_url' => $config['provider_config']['certify_url'] ?? '',
+                'status_url' => $config['provider_config']['status_url'] ?? '',
+                'cancel_url' => $config['provider_config']['cancel_url'] ?? '',
+                'timeout' => $config['provider_config']['timeout'] ?? 30,
+                'verify_ssl' => $config['provider_config']['verify_ssl'] ?? true,
             ];
         }
 
@@ -95,11 +96,11 @@ class FelConfig
     }
     
     /**
-     * Create a new instance from environment variables
+     * Create a new instance from a configuration file
      * 
      * @return self
      */
-    public static function fromEnv(): self
+    public static function fromConfig(): self
     {
         return new self();
     }

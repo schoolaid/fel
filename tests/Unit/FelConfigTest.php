@@ -37,4 +37,21 @@ it('can create config from array', function () {
         ->and($config->getApiKey())->toBe('test_key')
         ->and($config->getSignatureKey())->toBe('test_firma_key')
         ->and($config->getProviderConfig())->toBe(['test_option' => 'test_value']);
+});
+
+it('can create config using setters', function () {
+    $config = new FelConfig();
+    
+    $config
+        ->setProvider('infile')
+        ->setUsername('test_user')
+        ->setApiKey('test_key')
+        ->setSignatureKey('test_firma_key')
+        ->setProviderConfig(['test_option' => 'test_value']);
+    
+    expect($config->getProvider())->toBe('infile')
+        ->and($config->getUsername())->toBe('test_user')
+        ->and($config->getApiKey())->toBe('test_key')
+        ->and($config->getSignatureKey())->toBe('test_firma_key')
+        ->and($config->getProviderConfig())->toBe(['test_option' => 'test_value']);
 }); 

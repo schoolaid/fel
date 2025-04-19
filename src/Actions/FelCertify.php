@@ -55,7 +55,7 @@ class FelCertify
         // 1. Generate XML
         $xml = $this->getInvoiceXml();
         
-        // 2. Create certification service
+        // 2. Create a certification service
         $service = FelCertificationService::fromConfig($this->config);
         
         // 3. Certify the XML

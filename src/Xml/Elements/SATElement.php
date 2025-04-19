@@ -31,7 +31,7 @@ class SATElement implements XmlSerializable
         
         $children = [$this->dte->asXML()];
         
-        if ($this->adenda) {
+        if ($this->adenda && $this->adenda->hasAddendas()) {
             $children[] = $this->adenda->asXML();
         }
         

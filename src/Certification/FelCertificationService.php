@@ -8,15 +8,9 @@ use Schoolaid\Fel\Certification\Contracts\CertificationResponseInterface;
 use Schoolaid\Fel\Certification\Contracts\ProviderInterface;
 use Schoolaid\Fel\Certification\Contracts\StatusResponseInterface;
 use Schoolaid\Fel\Certification\Exceptions\CertificationException;
-use Schoolaid\Fel\Certification\Exceptions\InvalidProviderException;
-use Schoolaid\Fel\Certification\Exceptions\ProviderNotFoundException;
 use Schoolaid\Fel\Certification\Providers\InfileProvider;
 use Schoolaid\Fel\Certification\Responses\CancellationResponse;
-use Schoolaid\Fel\Certification\Responses\CertificationResponse;
-use Schoolaid\Fel\Certification\Responses\StatusResponse;
 use Schoolaid\Fel\Config\FelConfig;
-use Schoolaid\Fel\Models\Cancellation;
-use GuzzleHttp\Exception\GuzzleException;
 
 /**
  * Service for FEL certification operations
@@ -124,7 +118,7 @@ class FelCertificationService
     }
 
     /**
-     * Cancel a document using Cancellation model
+     * Cancel a document using a Cancellation model
      *
      * @throws CertificationException
      */

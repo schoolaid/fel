@@ -71,7 +71,7 @@ class FelCancel
             $idReceiver,
             $reason,
             $documentDateTime ?? now()->format('Y-m-d\TH:i:s'),
-            $cancellationDateTime
+            $cancellationDateTime ?? now()->format('Y-m-d\TH:i:s')
         );
         
         return new self($cancellation, $config);

@@ -20,19 +20,6 @@ use Schoolaid\Fel\Models\FelTotals;
 use Schoolaid\Fel\Models\Invoice;
 use Illuminate\Support\Str;
 
-beforeEach(function () {
-    // Cargar variables de entorno desde .env para el test
-    if (file_exists(dirname(__DIR__, 2) . '/.env')) {
-        $dotenv = \Dotenv\Dotenv::createImmutable(dirname(__DIR__, 2));
-        $dotenv->load();
-    }
-    
-    // Verificar que las variables de entorno necesarias estén definidas
-    if (empty($_ENV['FEL_PROVIDER']) || empty($_ENV['FEL_USERNAME'])) {
-        $this->markTestSkipped('Variables de entorno para FEL no configuradas. Copie .env.example a .env y configure sus credenciales.');
-    }
-});
-
 it('can create a valid invoice object for certification', function () {
     // Crear una factura igual a la del test de generación XML
     $invoice = createTestInvoice();
@@ -49,7 +36,7 @@ it( 'can certify an invoice with the FEL service', function () {
     $invoice = createTestInvoice();
     
     // Obtener la configuración FEL desde variables de entorno
-    $config = FelConfig::fromEnv();
+    $config = FelConfig::fromConfig();
     $config->setIdentifier(Str::uuid()->toString());
     // Crear la acción de certificación
     $certify = new FelCertify($invoice, $config);
@@ -76,10 +63,10 @@ function createTestInvoice(): Invoice
     // 1. Create issuer address
     $issuerAddress = new FelAddress(
         '15 AVENIDA 5-50 COLONIA VISTA HERMOSA III, EDIFICIO SPAZIO NIVEL 2 OF. 209 ZONA 15',
-        '01001',
-        'GUATEMALA',
-        'GUATEMALA',
-        'GT'
+        '10101',
+        'Villa Nueva',
+        'Guatemala',
+        'GT',
     );
 
     // 2. Create issuer
@@ -93,13 +80,13 @@ function createTestInvoice(): Invoice
         $issuerAddress
     );
 
-    // 3. Create receiver address
+    // 3. Create a receiver address
     $receiverAddress = new FelAddress(
         'Villa Nueva',
         '01064',
-        'GUATEMALA',
-        'GUATEMALA',
-        'GT'
+        'Villa Nueva',
+        'Guatemala',
+        'GT',
     );
 
     // 4. Create receiver
@@ -134,12 +121,19 @@ function createTestInvoice(): Invoice
     // 8. Create totals (without values, they will be calculated)
     $totals = new FelTotals(grandTotal: 20);
 
-    // 9. Create addenda
-    $addenda = new FelAddenda(
-        'http://www.sat.gob.gt/face2/ComplementoFiscal',
-        'Orden',
-        'Orden #186, Arellano Sanchinelli, Renata - abril 2025'
-    );
+    // 9. Create multiple addendas
+    $addendas = [
+        new FelAddenda(
+            'http://www.sat.gob.gt/face2/ComplementoFiscal',
+            'Orden',
+            'Orden #186, Arellano Sanchinelli, Renata - abril 2025'
+        ),
+        new FelAddenda(
+            'http://www.sat.gob.gt/face2/InfoAdicional',
+            'InfoAdicional',
+            'Información adicional para la factura'
+        )
+    ];
 
     // 10. Create invoice using enums directly
     return new Invoice(
@@ -151,6 +145,6 @@ function createTestInvoice(): Invoice
         $phrases,
         $items,
         $totals,
-        $addenda
+        $addendas
     );
 } 

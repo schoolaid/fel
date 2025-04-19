@@ -2,11 +2,8 @@
 
 namespace Tests\Unit;
 
-use DateTime;
-use DOMException;
 use Schoolaid\Fel\Actions\FelCancel;
 use Schoolaid\Fel\Actions\FelCertify;
-use Schoolaid\Fel\Certification\FelCertificationService;
 use Schoolaid\Fel\Certification\Responses\CancellationResponse;
 use Schoolaid\Fel\Certification\Responses\CertificationResponse;
 use Schoolaid\Fel\Config\FelConfig;
@@ -27,19 +24,6 @@ use Schoolaid\Fel\Models\Invoice;
 use Illuminate\Support\Str;
 use Mockery;
 
-beforeEach(function () {
-    // Cargar variables de entorno desde .env para el test
-    if (file_exists(dirname(__DIR__, 2) . '/.env')) {
-        $dotenv = \Dotenv\Dotenv::createImmutable(dirname(__DIR__, 2));
-        $dotenv->load();
-    }
-
-    // Verificar que las variables de entorno necesarias estén definidas
-    if (empty($_ENV['FEL_PROVIDER']) || empty($_ENV['FEL_USERNAME'])) {
-        $this->markTestSkipped('Variables de entorno para FEL no configuradas. Copie .env.example a .env y configure sus credenciales.');
-    }
-});
-
 afterEach(function () {
     Mockery::close();
 });
@@ -52,7 +36,7 @@ it('can generate cancellation xml', function () {
     $documentDate = '2023-01-15T14:00:00';
     $cancellationDate = '2023-01-16T10:00:00';
 
-    $config = FelConfig::fromEnv();
+    $config = FelConfig::fromConfig();
 
     $cancellation = new Cancellation(
         $uuid,
@@ -81,7 +65,7 @@ it('can execute cancellation', function () {
     $invoice = createTestInvoice();
 
     // Obtener la configuración FEL desde variables de entorno
-    $config = FelConfig::fromEnv();
+    $config = FelConfig::fromConfig();
     $config->setIdentifier(Str::uuid()->toString());
     // Crear la acción de certificación
     $certify = new FelCertify($invoice, $config);
@@ -119,7 +103,7 @@ it('can be created from params', function () {
     $issuerNit = '73023094';
     $reason = 'Error en datos';
 
-    $config = FelConfig::fromEnv();
+    $config = FelConfig::fromConfig();
 
     // 2. Act
     $felCancel = FelCancel::fromParams(
@@ -142,7 +126,7 @@ it('can be created from params', function () {
 
 function createTestInvoice(): Invoice
 {
-    // 1. Create issuer address
+    // 1. Create an issuer address
     $issuerAddress = new FelAddress(
         '15 AVENIDA 5-50 COLONIA VISTA HERMOSA III, EDIFICIO SPAZIO NIVEL 2 OF. 209 ZONA 15',
         '01001',
@@ -162,7 +146,7 @@ function createTestInvoice(): Invoice
         $issuerAddress
     );
 
-    // 3. Create receiver address
+    // 3. Create a receiver address
     $receiverAddress = new FelAddress(
         'Villa Nueva',
         '01064',
@@ -183,7 +167,7 @@ function createTestInvoice(): Invoice
     $phrase = new FelPhrase(1, 1);
     $phrases = new FelPhrases([$phrase]);
 
-    // 6. Create item without specific taxes to test automatic calculation
+    // 6. Create an item without specific taxes to test automatic calculation
     $item = new FelItem(
         1,              // NumeroLinea
         'S',            // BienOServicio
@@ -210,7 +194,7 @@ function createTestInvoice(): Invoice
         'Orden #186, Arellano Sanchinelli, Renata - abril 2025'
     );
 
-    // 10. Create invoice using enums directly
+    // 10. Create an invoice using enums directly
     return new Invoice(
         DocumentTypeEnum::LOCAL_INVOICE,
         now()->format('Y-m-d\TH:i:s-06:00'),

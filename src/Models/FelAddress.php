@@ -15,7 +15,7 @@ class FelAddress
         string $postalCode = '',
         string $municipality = '',
         string $department = '',
-        string $country = 'GT'
+        string $country = ''
     ) {
         $this->street = $street;
         $this->postalCode = $postalCode;

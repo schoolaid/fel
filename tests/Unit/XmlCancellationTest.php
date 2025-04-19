@@ -7,8 +7,8 @@ use Schoolaid\Fel\Actions\FelCancel;
 use Schoolaid\Fel\Config\FelConfig;
 
 it('correctly generates XML for document cancellation', function () {
-    // 1. Create test config with known values
-    $config = FelConfig::fromEnv();
+    // 1. Create a test config with known values
+    $config = FelConfig::fromConfig();
 
     // 2. Fixed dates for consistent testing
 

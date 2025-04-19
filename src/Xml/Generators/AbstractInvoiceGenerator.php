@@ -55,8 +55,8 @@ abstract class AbstractInvoiceGenerator implements InvoiceGeneratorInterface
         
         // Build adenda if needed
         $adenda = null;
-        if ($this->invoice->addenda) {
-            $adenda = new AdendaElement($this->invoice->addenda);
+        if ($this->invoice->addendas) {
+            $adenda = new AdendaElement($this->invoice->addendas);
         }
         
         // Build SAT element

@@ -17,7 +17,7 @@ class Invoice
     public FelPhrases $phrases;
     public FelItems $items;
     public FelTotals $totals;
-    public ?FelAddenda $addenda;
+    public array $addendas = [];
     public ?FelOrderData $orderData;
     public bool $useTaxes = true;
     
@@ -30,7 +30,7 @@ class Invoice
         ?FelPhrases $phrases = null,
         ?FelItems $items = null,
         ?FelTotals $totals = null,
-        ?FelAddenda $addenda = null,
+        FelAddenda|array|null $addendas = null,
         ?FelOrderData $orderData = null
     ) {
         // Handle document type
@@ -56,7 +56,14 @@ class Invoice
         $this->phrases = $phrases ?? new FelPhrases();
         $this->items = $items ?? new FelItems();
         $this->totals = $totals ?? new FelTotals();
-        $this->addenda = $addenda;
+        
+        // Handle addendas - can be a single FelAddenda, array of FelAddenda objects, or null
+        if ($addendas instanceof FelAddenda) {
+            $this->addendas = [$addendas];
+        } elseif (is_array($addendas)) {
+            $this->addendas = $addendas;
+        }
+        
         $this->orderData = $orderData;
     }
     
@@ -73,8 +80,10 @@ class Invoice
             'totals' => $this->totals->toArray()
         ];
         
-        if ($this->addenda) {
-            $data['addenda'] = $this->addenda->toArray();
+        if (!empty($this->addendas)) {
+            $data['addendas'] = array_map(function(FelAddenda $addenda) {
+                return $addenda->toArray();
+            }, $this->addendas);
         }
         
         if ($this->orderData) {
@@ -82,6 +91,38 @@ class Invoice
         }
         
         return $data;
+    }
+
+    /**
+     * Add an addenda to the invoice
+     *
+     * @param FelAddenda $addenda
+     * @return self
+     */
+    public function addAddenda(FelAddenda $addenda): self
+    {
+        $this->addendas[] = $addenda;
+        return $this;
+    }
+    
+    /**
+     * Get all addendas
+     * 
+     * @return array
+     */
+    public function getAddendas(): array
+    {
+        return $this->addendas;
+    }
+    
+    /**
+     * Check if the invoice has any addendas
+     *
+     * @return bool
+     */
+    public function hasAddendas(): bool
+    {
+        return !empty($this->addendas);
     }
 
     public function setUseTaxes(bool $useTaxes): void

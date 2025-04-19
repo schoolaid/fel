@@ -19,7 +19,7 @@ use Schoolaid\Fel\Models\FelTotals;
 use Schoolaid\Fel\Models\Invoice;
 
 it('correctly generates XML for general invoice', function () {
-    // 1. Create issuer address
+    // 1. Create an issuer address
     $issuerAddress = new FelAddress(
         '15 AVENIDA 5-50 COLONIA VISTA HERMOSA III, EDIFICIO SPAZIO NIVEL 2 OF. 209 ZONA 15',
         '01001',
@@ -60,7 +60,7 @@ it('correctly generates XML for general invoice', function () {
     $phrase = new FelPhrase(1, 1);
     $phrases = new FelPhrases([$phrase]);
 
-    // 6. Create item without specific taxes to test automatic calculation
+    // 6. Create an item without specific taxes to test automatic calculation
     $item = new FelItem(
         1,              // NumeroLinea
         'S',            // BienOServicio
@@ -74,7 +74,7 @@ it('correctly generates XML for general invoice', function () {
         640             // Total
     );
 
-    // 7. Create collection of items
+    // 7. Create a collection of items
     $items = new FelItems([$item]);
 
     // 9. Create totals (without values, they will be calculated)
@@ -87,7 +87,7 @@ it('correctly generates XML for general invoice', function () {
         'Orden #186, Arellano Sanchinelli, Renata - abril 2025'
     );
 
-    // 11. Create invoice using enums directly
+    // 11. Create an invoice using enums directly
     $invoice = new Invoice(
         DocumentTypeEnum::LOCAL_INVOICE,
         '2025-04-10T20:19:55-06:00',
