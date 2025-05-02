@@ -135,7 +135,7 @@ function createTestInvoice(): Invoice
         )
     ];
 
-    // 10. Create invoice using enums directly
+    // 10. Create an invoice using enums directly
     return new Invoice(
         DocumentTypeEnum::LOCAL_INVOICE,
         now()->format('Y-m-d\TH:i:s'),

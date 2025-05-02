@@ -13,13 +13,15 @@ class GeneralDataElement implements XmlSerializable
     protected string $emissionDateTime;
     protected string $currencyCode;
     protected string $documentType;
+    protected ?string $personType;
     
-    public function __construct(string $emissionDateTime, string $currencyCode, string $documentType)
+    public function __construct(string $emissionDateTime, string $currencyCode, string $documentType, ?string $personType = null)
     {
         $this->builder = new XmlDocumentBuilder();
         $this->emissionDateTime = $emissionDateTime;
         $this->currencyCode = $currencyCode;
         $this->documentType = $documentType;
+        $this->personType = $personType;
     }
 
     /**
@@ -32,6 +34,10 @@ class GeneralDataElement implements XmlSerializable
             GeneralDataXmlTags::CurrencyCode->value => $this->currencyCode,
             GeneralDataXmlTags::DocumentType->value => $this->documentType
         ];
+        
+        if ($this->personType !== null) {
+            $attributes[GeneralDataXmlTags::PersonType->value] = $this->personType;
+        }
         
         return $this->builder->buildElement(
             $this->getXmlTagName(),

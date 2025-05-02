@@ -8,4 +8,5 @@ enum GeneralDataXmlTags: string
     case EmissionDateTime = 'FechaHoraEmision';
     case CurrencyCode     = 'CodigoMoneda';
     case DocumentType     = 'Tipo';
+    case PersonType       = 'TipoPersoneria';
 } 

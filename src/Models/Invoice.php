@@ -20,6 +20,7 @@ class Invoice
     public array $addendas = [];
     public ?FelOrderData $orderData;
     public bool $useTaxes = true;
+    public ?string $personType = null;
     
     public function __construct(
         DocumentTypeEnum|string|null $documentType = null,
@@ -31,7 +32,8 @@ class Invoice
         ?FelItems $items = null,
         ?FelTotals $totals = null,
         FelAddenda|array|null $addendas = null,
-        ?FelOrderData $orderData = null
+        ?FelOrderData $orderData = null,
+        ?string $personType = null
     ) {
         // Handle document type
         if ($documentType instanceof DocumentTypeEnum) {
@@ -65,6 +67,7 @@ class Invoice
         }
         
         $this->orderData = $orderData;
+        $this->personType = $personType;
     }
     
     public function toArray(): array
@@ -90,11 +93,15 @@ class Invoice
             $data['orderData'] = $this->orderData->toArray();
         }
         
+        if ($this->personType !== null) {
+            $data['personType'] = $this->personType;
+        }
+        
         return $data;
     }
 
     /**
-     * Add an addenda to the invoice
+     * Add an addendum to the invoice
      *
      * @param FelAddenda $addenda
      * @return self

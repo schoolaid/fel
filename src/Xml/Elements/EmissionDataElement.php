@@ -24,7 +24,8 @@ class EmissionDataElement implements XmlSerializable
         $this->generalData = new GeneralDataElement(
             $invoice->emissionDateTime, 
             $invoice->currencyCode, 
-            $invoice->documentType
+            $invoice->documentType,
+            $invoice->personType
         );
         $this->issuer = new IssuerElement($invoice->issuer);
         $this->receiver = new ReceiverElement($invoice->receiver);
