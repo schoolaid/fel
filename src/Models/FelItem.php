@@ -76,7 +76,7 @@ class FelItem
     {
         // Por simplicidad, estamos considerando que el total es igual al precio
         // Se podría implementar una lógica más compleja si es necesario
-        return $this->price;
+        return $this->total;
     }
     
     public function toArray(): array

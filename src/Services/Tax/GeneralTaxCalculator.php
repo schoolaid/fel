@@ -85,7 +85,7 @@ class GeneralTaxCalculator implements TaxCalculatorInterface
      */
     protected function calculateIVA(FelItem $item): void
     {
-        $tax = new FelTax(TaxEnum::IVA, $item->price);
+        $tax = new FelTax(TaxEnum::IVA, $item->total);
         $tax->calculate();
         $item->taxes[] = $tax;
     }
