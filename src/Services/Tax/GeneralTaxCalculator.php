@@ -29,7 +29,8 @@ class GeneralTaxCalculator implements TaxCalculatorInterface
                 // For normal invoices with IVA
                 $this->calculateIVA($item);
                 break;
-                
+
+            case DocumentTypeEnum::SMALL_TAXPAYER_INVOICE:
             case DocumentTypeEnum::EXPORT_INVOICE:
                 // For export invoices - no IVA
                 break;
@@ -38,7 +39,7 @@ class GeneralTaxCalculator implements TaxCalculatorInterface
                 // For special invoices
                 $this->calculateIVA($item);
                 break;
-                
+
             default:
                 // By default, apply IVA
                 $this->calculateIVA($item);
