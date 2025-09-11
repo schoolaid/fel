@@ -51,7 +51,7 @@ class FelItem
         }
         
         // Establecer el total si se proporciona, o calcularlo
-        $this->total = $total > 0 ? $total : $this->calculateTotal();
+        $this->total = $total;
     }
     
     /**
