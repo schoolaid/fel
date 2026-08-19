@@ -17,6 +17,7 @@ class EmissionDataElement implements XmlSerializable
     protected PhrasesElement $phrases;
     protected ItemsElement $items;
     protected TotalsElement $totals;
+    protected ?ComplementsElement $complements = null;
 
     public function __construct(Invoice $invoice)
     {
@@ -32,6 +33,13 @@ class EmissionDataElement implements XmlSerializable
         $this->phrases = new PhrasesElement($invoice->phrases);
         $this->items = new ItemsElement($invoice->items);
         $this->totals = new TotalsElement($invoice->totals, $invoice->useTaxes);
+
+        if ($invoice->hasReferenceNote()) {
+            $this->complements = new ComplementsElement(
+                $invoice->getReferenceNote(),
+                $invoice->documentType
+            );
+        }
     }
 
     /**
@@ -51,7 +59,11 @@ class EmissionDataElement implements XmlSerializable
             $this->items->asXML(),
             $this->totals->asXML()
         ];
-        
+
+        if ($this->complements !== null) {
+            $children[] = $this->complements->asXML();
+        }
+
         return $this->builder->buildElement(
             $this->getXmlTagName(),
             $attributes,

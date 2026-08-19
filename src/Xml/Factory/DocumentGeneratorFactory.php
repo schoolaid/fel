@@ -4,6 +4,8 @@ namespace Schoolaid\Fel\Xml\Factory;
 
 use Schoolaid\Fel\Enums\DocumentTypeEnum;
 use Schoolaid\Fel\Models\Invoice;
+use Schoolaid\Fel\Xml\Generators\CreditNoteGenerator;
+use Schoolaid\Fel\Xml\Generators\DebitNoteGenerator;
 use Schoolaid\Fel\Xml\Generators\DonationReceiptGenerator;
 use Schoolaid\Fel\Xml\Generators\ExportInvoiceGenerator;
 use Schoolaid\Fel\Xml\Generators\GeneralInvoiceGenerator;
@@ -27,6 +29,8 @@ class DocumentGeneratorFactory
         return match ($documentType) {
             DocumentTypeEnum::DONATION_RECEIPT => new DonationReceiptGenerator($invoice),
             DocumentTypeEnum::EXPORT_INVOICE => new ExportInvoiceGenerator($invoice),
+            DocumentTypeEnum::CREDIT_NOTE => new CreditNoteGenerator($invoice),
+            DocumentTypeEnum::DEBIT_NOTE => new DebitNoteGenerator($invoice),
             default => new GeneralInvoiceGenerator($invoice),
         };
     }

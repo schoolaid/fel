@@ -21,7 +21,8 @@ class Invoice
     public ?FelOrderData $orderData;
     public bool $useTaxes = true;
     public ?string $personType = null;
-    
+    public ?FelReferenceNote $referenceNote = null;
+
     public function __construct(
         DocumentTypeEnum|string|null $documentType = null,
         string|null $emissionDateTime = null,
@@ -33,7 +34,8 @@ class Invoice
         ?FelTotals $totals = null,
         FelAddenda|array|null $addendas = null,
         ?FelOrderData $orderData = null,
-        ?string $personType = null
+        ?string $personType = null,
+        ?FelReferenceNote $referenceNote = null
     ) {
         // Handle document type
         if ($documentType instanceof DocumentTypeEnum) {
@@ -68,6 +70,7 @@ class Invoice
         
         $this->orderData = $orderData;
         $this->personType = $personType;
+        $this->referenceNote = $referenceNote;
     }
     
     public function toArray(): array
@@ -96,7 +99,11 @@ class Invoice
         if ($this->personType !== null) {
             $data['personType'] = $this->personType;
         }
-        
+
+        if ($this->referenceNote) {
+            $data['referenceNote'] = $this->referenceNote->toArray();
+        }
+
         return $data;
     }
 
@@ -130,6 +137,26 @@ class Invoice
     public function hasAddendas(): bool
     {
         return !empty($this->addendas);
+    }
+
+    /**
+     * Referencia al documento origen (complemento ReferenciasNota),
+     * obligatoria para notas de crédito (NCRE) y débito (NDEB).
+     */
+    public function setReferenceNote(FelReferenceNote $referenceNote): self
+    {
+        $this->referenceNote = $referenceNote;
+        return $this;
+    }
+
+    public function getReferenceNote(): ?FelReferenceNote
+    {
+        return $this->referenceNote;
+    }
+
+    public function hasReferenceNote(): bool
+    {
+        return $this->referenceNote !== null;
     }
 
     public function setUseTaxes(bool $useTaxes): void
