@@ -23,7 +23,7 @@ use Illuminate\Support\Str;
 
 it('correctly generates XML for donation receipt without taxes', function () {
     // 1. Create an issuer address
-    $invoice = createTestInvoice();
+    $invoice = createDonationReceiptInvoice();
     // 10. Generate XML using FelGenerate action
     $generator = new FelGenerate($invoice);
     $xml = $generator->generateXml();
@@ -35,16 +35,11 @@ it('correctly generates XML for donation receipt without taxes', function () {
         ->and($xml)->toContain('<dte:GranTotal>2</dte:GranTotal>')
         ->and($xml)->not->toContain('<dte:NombreCorto>IVA</dte:NombreCorto>')
         ->and($xml)->not->toContain('<dte:MontoImpuesto>');
-
-    dd($xml);
-    // 12. Verify that no taxes were generated
-
-    // 13. Check that the TotalImpuestos element is empty or not present
 });
 
 it( 'can certify an invoice with the FEL service', function () {
     // 1. Create an issuer address
-    $invoice = createTestInvoice();
+    $invoice = createDonationReceiptInvoice();
 
     // Obtener la configuración FEL desde variables de entorno
     $config = FelConfig::fromConfig();
@@ -59,12 +54,30 @@ it( 'can certify an invoice with the FEL service', function () {
     // Verificar la respuesta
     expect($response)->toBeInstanceOf(CertificationResponse::class);
 
-    dd($response);
+    felLogDocument('certify-donation', [
+        'test' => 'DonationReceiptTest: can certify an invoice with the FEL service',
+        'successful' => $response->isSuccessful(),
+        'uuid' => $response->getUuid(),
+        'series' => $response->getSeries(),
+        'number' => $response->getNumber(),
+        'certificationDate' => $response->getCertificationDate(),
+        'errors' => $response->getErrors(),
+        'rawResponse' => $response->getRawResponse(),
+    ], [
+        'request.xml' => $response->getRequestXml(),
+        'certified.xml' => $response->getCertifiedXml(),
+    ]);
+})->group('integration')->skip(
+    // SAT valida contra su registro (MiniRTU): el NIT demo de INFILE es
+    // régimen GEN y RDON exige un emisor registrado como donataria (EXE) con
+    // la personería correcta (reglas 2541/2543/25301/25401 — ver tests/logs/
+    // certify-donation). Reactivar cuando haya credenciales de una entidad
+    // autorizada para RDON.
+    'El NIT demo de INFILE no puede emitir recibos de donación (RDON)'
+);
 
-});
 
-
-function createTestInvoice(): Invoice
+function createDonationReceiptInvoice(): Invoice
 {
     // 1. Create an issuer address
     $issuerAddress = new FelAddress(
@@ -75,11 +88,11 @@ function createTestInvoice(): Invoice
         'GT'
     );
 
-    // 2. Create issuer
+    // 2. Create issuer (el NIT debe coincidir con las credenciales de testing)
     $issuer = new FelIssuer(
         'esevitra@gmail.com',
         '1',
-        '68244703',
+        felTestIssuerNit(),
         'Demo',
         IVAAffiliationTypeEnum::NonTaxable,
         'Laid Demo',

@@ -104,7 +104,15 @@ it('correctly builds and stores data structure from FEL XML', function () {
     ];
 
     // Verify the general structure
-
-    // Show the complete structure for verification
-    dd($felData);
+    expect($felData)->toHaveKeys(['issuer', 'receiver', 'items', 'totals', 'addenda'])
+        ->and($felData['issuer']['nit'])->toBe('73023094')
+        ->and($felData['issuer']['vatAffiliation'])->toBe(IVAAffiliationTypeEnum::General)
+        ->and($felData['issuer']['address']['country'])->toBe('GT')
+        ->and($felData['receiver']['id'])->toBe('CF')
+        ->and($felData['items'])->toHaveCount(1)
+        ->and($felData['items'][0]['lineNumber'])->toBe(1)
+        ->and($felData['items'][0]['total'])->toBe(640.0)
+        ->and($felData['totals']['grandTotal'])->toBe(640.0)
+        ->and(round($felData['totals']['taxTotals']['IVA'], 2))->toBe(68.57)
+        ->and($felData['addenda']['name'])->toBe('Orden');
 });

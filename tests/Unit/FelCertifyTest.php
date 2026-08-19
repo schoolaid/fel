@@ -22,18 +22,18 @@ use Illuminate\Support\Str;
 
 it('can create a valid invoice object for certification', function () {
     // Crear una factura igual a la del test de generación XML
-    $invoice = createTestInvoice();
+    $invoice = createCertifyTestInvoice();
     // Verificar que la factura sea válida
     expect($invoice)->toBeInstanceOf(Invoice::class)
         ->and($invoice->documentType)->toBe(DocumentTypeEnum::LOCAL_INVOICE->value)
         ->and($invoice->currencyCode)->toBe(CurrencyEnum::QUETZAL->value)
-        ->and($invoice->issuer->nit)->toBe('11201169K')
+        ->and($invoice->issuer->nit)->toBe(felTestIssuerNit())
         ->and($invoice->items->items)->toHaveCount(1);
 });
 
 it( 'can certify an invoice with the FEL service', function () {
     // Crear la factura para certificar
-    $invoice = createTestInvoice();
+    $invoice = createCertifyTestInvoice();
     
     // Obtener la configuración FEL desde variables de entorno
     $config = FelConfig::fromConfig();
@@ -47,18 +47,32 @@ it( 'can certify an invoice with the FEL service', function () {
     // Verificar la respuesta
     expect($response)->toBeInstanceOf(CertificationResponse::class);
 
-    dd($response);
-    // En un caso real, deberíamos verificar que la certificación fue exitosa,
-    // pero como esto depende de credenciales válidas, solo verificamos que el
-    // proceso no falló con una excepción
-});
+    felLogDocument('certify-fact', [
+        'test' => 'FelCertifyTest: can certify an invoice with the FEL service',
+        'successful' => $response->isSuccessful(),
+        'uuid' => $response->getUuid(),
+        'series' => $response->getSeries(),
+        'number' => $response->getNumber(),
+        'certificationDate' => $response->getCertificationDate(),
+        'errors' => $response->getErrors(),
+        'rawResponse' => $response->getRawResponse(),
+    ], [
+        'request.xml' => $response->getRequestXml(),
+        'certified.xml' => $response->getCertifiedXml(),
+    ]);
+
+    expect($response->isSuccessful())->toBeTrue();
+})->group('integration')->skip(
+    fn (): bool => ! felHasLiveCredentials(),
+    'Requiere credenciales de testing de INFILE en el .env'
+);
 
 /**
  * Crear una factura de prueba para los tests
  * 
  * @return Invoice
  */
-function createTestInvoice(): Invoice
+function createCertifyTestInvoice(): Invoice
 {
     // 1. Create issuer address
     $issuerAddress = new FelAddress(
@@ -69,11 +83,11 @@ function createTestInvoice(): Invoice
         'GT',
     );
 
-    // 2. Create issuer
+    // 2. Create issuer (el NIT debe coincidir con las credenciales de testing)
     $issuer = new FelIssuer(
         'esevitra@gmail.com',
         '1',
-        '11201169K',
+        felTestIssuerNit(),
         'Demo',
         IVAAffiliationTypeEnum::General,
         'Laid Demo',

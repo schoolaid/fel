@@ -52,8 +52,6 @@ it('can generate cancellation xml', function () {
     // 2. Act
     $xml = $felCancel->generateXml();
 
-    dd($xml);
-
     // 3. Assert
     expect($xml)->toBeString()
         ->and($xml)->toContain('<?xml version="1.0" encoding="UTF-8"?>')
@@ -64,7 +62,7 @@ it('can generate cancellation xml', function () {
 });
 
 it('can execute cancellation', function () {
-    $invoice = createTestInvoice();
+    $invoice = createCancellationTestInvoice();
 
     // Obtener la configuración FEL desde variables de entorno
     $config = FelConfig::fromConfig();
@@ -76,8 +74,22 @@ it('can execute cancellation', function () {
     $responseInvoice = $certify->execute();
     // Verificar la respuesta
     expect($responseInvoice)->toBeInstanceOf(CertificationResponse::class);
-    echo "\n";
-    echo "UUID: " . $responseInvoice->getUuid() . "\n";
+
+    felLogDocument('certify-for-cancel', [
+        'test' => 'FelCancelTest: can execute cancellation (certificación previa)',
+        'successful' => $responseInvoice->isSuccessful(),
+        'uuid' => $responseInvoice->getUuid(),
+        'series' => $responseInvoice->getSeries(),
+        'number' => $responseInvoice->getNumber(),
+        'certificationDate' => $responseInvoice->getCertificationDate(),
+        'errors' => $responseInvoice->getErrors(),
+        'rawResponse' => $responseInvoice->getRawResponse(),
+    ], [
+        'request.xml' => $responseInvoice->getRequestXml(),
+        'certified.xml' => $responseInvoice->getCertifiedXml(),
+    ]);
+
+    expect($responseInvoice->isSuccessful())->toBeTrue();
 
     // 2. Fixed dates for consistent testing
     $cancellationDate = now()->format('Y-m-d\TH:i:s-06:00');
@@ -94,10 +106,24 @@ it('can execute cancellation', function () {
 
     $response = $cancel->execute();
 
+    felLogDocument('cancel', [
+        'test' => 'FelCancelTest: can execute cancellation',
+        'successful' => $response->isSuccessful(),
+        'uuid' => $responseInvoice->getUuid(),
+        'cancellationDate' => $response->getCancellationDate()?->format(DATE_ATOM),
+        'errors' => $response->getErrors(),
+        'rawResponse' => $response->getRawResponse(),
+    ], [
+        'request.xml' => $response->getRequestXml(),
+    ]);
+
     // 3. Assert
     expect($response)->toBeInstanceOf(CancellationResponse::class)
         ->and($response->isSuccessful())->toBeTrue();
-});
+})->group('integration')->skip(
+    fn (): bool => ! felHasLiveCredentials(),
+    'Requiere credenciales de testing de INFILE en el .env'
+);
 
 it('can be created from params', function () {
     // 1. Arrange
@@ -126,7 +152,7 @@ it('can be created from params', function () {
         ->and($cancellation->getReason())->toBe($reason);
 });
 
-function createTestInvoice(): Invoice
+function createCancellationTestInvoice(): Invoice
 {
     // 1. Create an issuer address
     $issuerAddress = new FelAddress(
@@ -137,11 +163,11 @@ function createTestInvoice(): Invoice
         'GT'
     );
 
-    // 2. Create issuer
+    // 2. Create issuer (el NIT debe coincidir con las credenciales de testing)
     $issuer = new FelIssuer(
         'esevitra@gmail.com',
         '1',
-        '11201169K',
+        felTestIssuerNit(),
         'Demo',
         IVAAffiliationTypeEnum::General,
         'Laid Demo',

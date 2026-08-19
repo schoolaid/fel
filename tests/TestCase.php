@@ -21,13 +21,13 @@ abstract class TestCase extends BaseTestCase
     protected function getEnvironmentSetUp($app): void
     {
         $dotenv = \Dotenv\Dotenv::createImmutable(dirname(__DIR__));
-        $dotenv->load();
+        $dotenv->safeLoad();
 
         $config = $app->get('config');
         $config->set('fel.provider', env('FEL_PROVIDER', ''));
         $config->set('fel.username', env('FEL_USERNAME', ''));
-        $config->set('fel.api_key', env('FEL_API_KEY', ''));
-        $config->set('fel.signature_key', env('FEL_SIGNATURE_KEY', ''));
+        $config->set('fel.api_key', env('FEL_LLAVE_FIRMA', env('FEL_API_KEY', '')));
+        $config->set('fel.signature_key', env('FEL_LLAVE_API', env('FEL_SIGNATURE_KEY', '')));
         $config->set('fel.provider_config.base_url', env('FEL_BASE_URL', ''));
         $config->set('fel.provider_config.certify_url', env('FEL_CERTIFY_URL', ''));
         $config->set('fel.provider_config.status_url', env('FEL_STATUS_URL', ''));

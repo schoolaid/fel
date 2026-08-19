@@ -3,3 +3,4 @@ src/*.xml
 *.xml
 .env
 /.idea
+/tests/logs/
