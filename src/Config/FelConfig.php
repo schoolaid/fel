@@ -293,7 +293,9 @@ class FelConfig
      * - base_url: API base URL
      * - timeout: Request timeout in seconds
      * - verify_ssl: Whether to verify SSL certificates
-     * - identifier: Tax ID or identifier for the issuer
+     * - identifier: unique per-transaction identifier (INFILE lo usa para
+     *   control de duplicidad; uno distinto por documento, p. ej. el id de
+     *   la orden — no un valor fijo como el NIT)
      * 
      * @param array<string, mixed> $providerConfig
      * @return self
@@ -306,7 +308,11 @@ class FelConfig
     
     /**
      * Set the identifier value in provider config
-     * 
+     *
+     * Se envía como header `identificador`; INFILE lo trata como id único
+     * por transacción (control de duplicidad). Asignar uno distinto por
+     * documento (p. ej. el id de la orden).
+     *
      * @param string $identifier
      * @return self
      */

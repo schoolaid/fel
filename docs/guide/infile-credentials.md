@@ -8,9 +8,11 @@ INFILE hands you three credentials:
 | **Signing key** (llave de firma) | Signing documents (electronic signer) | `llaveFirma` |
 | **API key** (llave del API) | Authenticating against the REST API | `llaveApi` and `llave` |
 
-Additionally, the `identificador` header carries the issuer's NIT when
-configured (`FEL_IDENTIFIER` / `provider_config['identifier']` /
-`setIdentifier()`).
+Additionally, the `identificador` header is sent when configured
+(`FEL_IDENTIFIER` / `provider_config['identifier']` / `setIdentifier()`).
+INFILE documents it as a **unique per-transaction identifier** used for
+duplicate control — prefer setting it per document
+(e.g. `setIdentifier($orderId)`) rather than using a static value.
 
 ## ⚠️ The historical name inversion
 

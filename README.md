@@ -108,8 +108,10 @@ FEL_LLAVE_FIRMA=tu_llave_de_firma  # llave del firmador (header llaveFirma)
 FEL_LLAVE_API=tu_llave_api         # llave del API REST (headers llaveApi y llave)
 # Nombres legados aún soportados: FEL_KEY (llave de firma) y FEL_PASSWORD (llave del API)
 
-# NIT del Emisor (opcional, pero recomendado)
-FEL_IDENTIFIER=12345678
+# Identificador para el header `identificador` (opcional)
+# OJO: INFILE lo usa como id ÚNICO POR TRANSACCIÓN (control de duplicidad);
+# prefiere $config->setIdentifier($ordenId) por documento en vez de un valor fijo
+FEL_IDENTIFIER=
 
 # Configuración de Conexión
 FEL_TIMEOUT=30
@@ -132,7 +134,7 @@ return [
         'cancel_url' => env('FEL_CANCEL_URL'),
         'timeout' => env('FEL_TIMEOUT', 30),
         'verify_ssl' => env('FEL_VERIFY_SSL', true),
-        'identifier' => env('FEL_IDENTIFIER'), // Tu NIT
+        'identifier' => env('FEL_IDENTIFIER'), // id único por transacción — mejor setIdentifier() por documento
     ],
 ];
 ```
@@ -153,7 +155,7 @@ $config = FelConfig::forInfile(
         'base_url' => 'https://certificador.feel.com.gt/fel/procesounificado/transaccion/v2/xml',
         'certify_url' => 'https://certificador.feel.com.gt/fel/procesounificado/transaccion/v2/xml',
         'cancel_url' => 'https://certificador.feel.com.gt/fel/procesounificado/transaccion/v2/xml',
-        'identifier' => '12345678'  // Tu NIT (opcional)
+        'identifier' => 'orden-0001'  // id único por transacción (opcional)
     ]
 );
 
@@ -169,7 +171,7 @@ $config = new FelConfig(
         'cancel_url' => 'https://certificador.feel.com.gt/fel/procesounificado/transaccion/v2/xml',
         'timeout' => 30,
         'verify_ssl' => true,
-        'identifier' => '12345678'  // Tu NIT (opcional)
+        'identifier' => 'orden-0001'  // id único por transacción (opcional)
     ]
 );
 
@@ -185,7 +187,7 @@ $credenciales = [
         'cancel_url' => 'https://certificador.feel.com.gt/fel/procesounificado/transaccion/v2/xml',
         'timeout' => 30,
         'verify_ssl' => true,
-        'identifier' => '12345678'
+        'identifier' => 'orden-0001' // id único por transacción
     ]
 ];
 
@@ -197,7 +199,7 @@ $config->setProvider('infile')
     ->setUsername('tu_usuario_infile')
     ->setLlaveFirma('tu_llave_de_firma')  // llave del firmador
     ->setLlaveApi('tu_llave_api')         // llave del API REST
-    ->setIdentifier('12345678')
+    ->setIdentifier('orden-0001')  // id único por transacción (control de duplicidad)
     ->setProviderConfig([
         'base_url' => 'https://certificador.feel.com.gt/fel/procesounificado/transaccion/v2/xml',
         'certify_url' => 'https://certificador.feel.com.gt/fel/procesounificado/transaccion/v2/xml',
@@ -228,7 +230,7 @@ $config = new FelConfig(
         'cancel_url' => 'https://certificador.feel.com.gt/fel/procesounificado/transaccion/v2/xml',
         'timeout' => 30,
         'verify_ssl' => true,
-        'identifier' => $empresa->nit
+        'identifier' => 'orden-' . $ordenId // id único por transacción, uno distinto por documento
     ]
 );
 
@@ -260,7 +262,7 @@ class FelService
                 'cancel_url' => 'https://certificador.feel.com.gt/fel/procesounificado/transaccion/v2/xml',
                 'timeout' => 30,
                 'verify_ssl' => true,
-                'identifier' => $company->nit
+                'identifier' => 'orden-' . $orderId // id único por transacción, uno distinto por documento
             ]
         );
 
@@ -356,7 +358,7 @@ $config = new FelConfig(
         'cancel_url' => 'https://certificador.feel.com.gt/fel/procesounificado/transaccion/v2/xml',
         'timeout' => 30,
         'verify_ssl' => true,
-        'identifier' => '12345678'
+        'identifier' => 'orden-0001' // id único por transacción
     ]
 );
 

@@ -214,3 +214,16 @@ Contexto completo en `notas-credito-investigacion.md`. Para revisión:
 - En `FelConfig::fromArray`, la clave alterna `llave_firma` alimenta el slot
   `signature_key` (que viaja como `llaveApi`) — también invertida; no cambiar
   sin revisar consumidores.
+
+**Ideas surgidas de la auditoría de marketaid (2026-08-18)**
+- `AbstractInvoiceGenerator` sobrescribe en silencio el `grandTotal`/`taxTotal`
+  que pase el caller (siempre emite Σ de los ítems). Considerar avisar o fallar
+  cuando el caller pasa un `grandTotal` distinto al calculado, para detectar
+  descuadres contables en vez de taparlos (verificado: pasar 999999 con ítems
+  que suman 150 emite GranTotal 150 sin queja).
+- Header `identificador`: INFILE lo trata como identificador **único por
+  transacción** (control de duplicidad); marketaid envía el id de la orden
+  (uso correcto). Nuestra doc lo describía como "NIT del emisor" — corregido en
+  `docs/guide/`. Verificar contra la doc de INFILE si un `FEL_IDENTIFIER`
+  estático en `.env` puede causar colisiones de dedupe; si sí, desaconsejarlo
+  explícitamente.

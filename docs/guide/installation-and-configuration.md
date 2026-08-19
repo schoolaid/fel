@@ -31,7 +31,7 @@ php artisan vendor:publish --provider="Schoolaid\Fel\FelServiceProvider"
 | `FEL_CERTIFY_URL` | Certification endpoint | Relative or absolute, resolved against `base_url` |
 | `FEL_CANCEL_URL` | Cancellation (anulación) endpoint | |
 | `FEL_STATUS_URL` | Status-check endpoint | Defaults to `consultarEstatus` |
-| `FEL_IDENTIFIER` | Issuer's NIT (tax ID) | Sent as the `identificador` header when set |
+| `FEL_IDENTIFIER` | Static value for the `identificador` header | INFILE treats `identificador` as a **unique per-transaction id** (duplicate control) — prefer `setIdentifier()` per document (e.g. your order id) over a static env value |
 | `FEL_TIMEOUT` | HTTP timeout (s) | Default 30 |
 | `FEL_VERIFY_SSL` | TLS verification | Default `true`; only disable in development |
 
