@@ -20,9 +20,6 @@ class ExportTaxCalculator implements TaxCalculatorInterface
     {
         // For export invoices, we don't apply IVA
         $item->taxes = [];
-        
-        // Recalculate the total of the item
-        $item->total = $item->calculateTotal();
     }
     
     /**

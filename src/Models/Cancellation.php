@@ -28,7 +28,7 @@ class Cancellation
         protected ?string $cancellationDateTime = null
     ) {
         if (null === $this->cancellationDateTime) {
-            $this->cancellationDateTime = new \DateTime();
+            $this->cancellationDateTime = (new \DateTime())->format('Y-m-d\TH:i:s');
         }
     }
 

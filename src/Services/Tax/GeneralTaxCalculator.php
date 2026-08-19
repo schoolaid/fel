@@ -45,9 +45,6 @@ class GeneralTaxCalculator implements TaxCalculatorInterface
                 $this->calculateIVA($item);
                 break;
         }
-        
-        // Recalculate the total of the item
-        $item->total = $item->calculateTotal();
     }
     
     /**

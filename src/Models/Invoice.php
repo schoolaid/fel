@@ -39,7 +39,7 @@ class Invoice
         if ($documentType instanceof DocumentTypeEnum) {
             $this->documentType = $documentType->value;
         } else {
-            $this->documentType = $documentType ?? DocumentTypeEnum::getDefault();
+            $this->documentType = $documentType ?? DocumentTypeEnum::getDefault()->value;
         }
         
         // Handle emission date

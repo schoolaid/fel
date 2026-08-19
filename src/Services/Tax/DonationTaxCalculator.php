@@ -20,9 +20,6 @@ class DonationTaxCalculator implements TaxCalculatorInterface
     {
         // For donation receipts, we don't apply any taxes
         $item->taxes = [];
-        
-        // Recalculate the total of the item
-        $item->total = $item->calculateTotal();
     }
     
     /**

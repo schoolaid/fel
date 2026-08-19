@@ -127,7 +127,13 @@ class FelCertificationService
         try {
             return $this->provider->cancel($xml);
         } catch (\Exception $e) {
-            throw new CertificationException($e->getMessage(), $e->getCode(), $e);
+            throw new CertificationException(
+                'Cancellation failed: ' . $e->getMessage(),
+                [],
+                null,
+                0,
+                $e
+            );
         }
     }
     

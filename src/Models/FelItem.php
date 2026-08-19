@@ -50,10 +50,11 @@ class FelItem
             }
         }
         
-        // Establecer el total si se proporciona, o calcularlo
-        $this->total = $total;
+        // Establecer el total si se proporciona, o calcularlo (regla SAT:
+        // Total = Precio - Descuento). El IVA se calcula sobre este total.
+        $this->total = $total ?: $this->calculateTotal();
     }
-    
+
     /**
      * Agrega un impuesto al ítem
      *
@@ -63,20 +64,17 @@ class FelItem
     public function addTax(FelTax $tax): self
     {
         $this->taxes[] = $tax;
-        $this->total = $this->calculateTotal();
         return $this;
     }
-    
+
     /**
-     * Calcula el total del ítem incluyendo el precio y los impuestos
+     * Calcula el total del ítem según la regla SAT: Total = Precio - Descuento
      *
      * @return float
      */
     public function calculateTotal(): float
     {
-        // Por simplicidad, estamos considerando que el total es igual al precio
-        // Se podría implementar una lógica más compleja si es necesario
-        return $this->total;
+        return $this->price - $this->discount;
     }
     
     public function toArray(): array

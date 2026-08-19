@@ -97,12 +97,39 @@ class FelConfig
     
     /**
      * Create a new instance from a configuration file
-     * 
+     *
      * @return self
      */
     public static function fromConfig(): self
     {
         return new self();
+    }
+
+    /**
+     * Crea la configuración para INFILE con los nombres veraces de las llaves.
+     *
+     * A diferencia del constructor histórico (cuyos parámetros apiKey /
+     * signatureKey están invertidos y no pueden renombrarse sin afectar a las
+     * apps que ya lo usan), aquí cada llave se llama como el header al que va:
+     *
+     *   $llaveFirma -> header llaveFirma      (llave del firmador)
+     *   $llaveApi   -> headers llaveApi/llave (llave del API REST)
+     *
+     * Preferir este constructor en código nuevo.
+     *
+     * @param string $username
+     * @param string $llaveFirma Llave del firmador
+     * @param string $llaveApi Llave del API REST
+     * @param array<string, mixed> $providerConfig
+     * @return self
+     */
+    public static function forInfile(
+        string $username,
+        string $llaveFirma,
+        string $llaveApi,
+        array $providerConfig = []
+    ): self {
+        return new self('infile', $username, $llaveFirma, $llaveApi, $providerConfig);
     }
     
     /**
@@ -127,22 +154,78 @@ class FelConfig
     
     /**
      * Get the API key
-     * 
+     *
+     * ATENCIÓN: nombre histórico invertido — este slot contiene la LLAVE DEL
+     * FIRMADOR (viaja como llaveFirma). En código nuevo usa getLlaveFirma().
+     *
      * @return string
      */
     public function getApiKey(): string
     {
         return $this->apiKey;
     }
-    
+
     /**
      * Get the signature key
-     * 
+     *
+     * ATENCIÓN: nombre histórico invertido — este slot contiene la LLAVE DEL
+     * API REST (viaja como llaveApi/llave). En código nuevo usa getLlaveApi().
+     *
      * @return string
      */
     public function getSignatureKey(): string
     {
         return $this->signatureKey;
+    }
+
+    /**
+     * Llave del firmador de INFILE (se envía como header llaveFirma).
+     *
+     * Accesor veraz del slot histórico apiKey: por compatibilidad con los
+     * consumidores existentes, la llave de firma vive en $apiKey y no se
+     * renombra el parámetro del constructor.
+     *
+     * @return string
+     */
+    public function getLlaveFirma(): string
+    {
+        return $this->apiKey;
+    }
+
+    /**
+     * Set the signer key (llave del firmador)
+     *
+     * @param string $llaveFirma
+     * @return self
+     */
+    public function setLlaveFirma(string $llaveFirma): self
+    {
+        $this->apiKey = $llaveFirma;
+        return $this;
+    }
+
+    /**
+     * Llave del API REST de INFILE (se envía como headers llaveApi y llave).
+     *
+     * Accesor veraz del slot histórico signatureKey.
+     *
+     * @return string
+     */
+    public function getLlaveApi(): string
+    {
+        return $this->signatureKey;
+    }
+
+    /**
+     * Set the REST API key (llave del API)
+     *
+     * @param string $llaveApi
+     * @return self
+     */
+    public function setLlaveApi(string $llaveApi): self
+    {
+        $this->signatureKey = $llaveApi;
+        return $this;
     }
     
     /**

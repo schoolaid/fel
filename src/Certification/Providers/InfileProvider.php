@@ -44,7 +44,14 @@ class InfileProvider implements ProviderInterface
     
     /**
      * Get common headers for Infile requests
-     * 
+     *
+     * El mapeo usa los accesores veraces de FelConfig. OJO: los nombres
+     * históricos de FelConfig están invertidos (getLlaveFirma() lee el slot
+     * apiKey y getLlaveApi() el slot signatureKey); ver FelConfig. NO cambiar
+     * qué slot alimenta cada header sin coordinar con todos los consumidores
+     * del paquete: romperia la autenticación contra INFILE. El contrato está
+     * fijado por el test InfileHeadersTest.
+     *
      * @return array<string, string>
      */
     protected function getCommonHeaders(): array
@@ -53,9 +60,9 @@ class InfileProvider implements ProviderInterface
             'Usuario' => $this->config->getUsername(),
             'UsuarioFirma' => $this->config->getUsername(),
             'UsuarioApi' => $this->config->getUsername(),
-            'llave' => $this->config->getSignatureKey(),
-            'llaveFirma' => $this->config->getApiKey(),
-            'llaveApi' => $this->config->getSignatureKey(),
+            'llave' => $this->config->getLlaveApi(),
+            'llaveFirma' => $this->config->getLlaveFirma(),
+            'llaveApi' => $this->config->getLlaveApi(),
         ];
         
         $identifier = $this->config->getIdentifier();
@@ -67,8 +74,33 @@ class InfileProvider implements ProviderInterface
     }
     
     /**
+     * Build the HTTP client configuration from the provider config
+     *
+     * Traduce timeout/verify_ssl a opciones de Guzzle y permite pasar
+     * opciones adicionales del cliente vía provider_config['client_config']
+     * (p. ej. un handler de pruebas).
+     *
+     * @return array<string, mixed>
+     */
+    protected function getClientConfig(): array
+    {
+        $providerConfig = $this->config->getProviderConfig();
+        $clientConfig = $providerConfig['client_config'] ?? [];
+
+        if (isset($providerConfig['timeout'])) {
+            $clientConfig['timeout'] = (float) $providerConfig['timeout'];
+        }
+
+        if (isset($providerConfig['verify_ssl'])) {
+            $clientConfig['verify'] = filter_var($providerConfig['verify_ssl'], FILTER_VALIDATE_BOOLEAN);
+        }
+
+        return $clientConfig;
+    }
+
+    /**
      * Parse HTTP response to a standardized array
-     * 
+     *
      * @param ResponseInterface $response
      * @return array<string, mixed>
      */
@@ -103,7 +135,8 @@ class InfileProvider implements ProviderInterface
         $providerConfig = $this->config->getProviderConfig();
         $action = new CertifyAction(
             $providerConfig['base_url'],
-            $providerConfig['certify_url']
+            $providerConfig['certify_url'],
+            $this->getClientConfig()
         );
 
         // Set XML body and headers
@@ -129,7 +162,7 @@ class InfileProvider implements ProviderInterface
                 $responseData['uuid'] ?? null,
                 $responseData['serie'] ?? null,
                 $responseData['numero'] ?? null,
-                $responseData['fecha'],
+                $responseData['fecha'] ?? null,
                 $responseData['xml_certificado'] ?? null,
                 [],
                 $responseData,
@@ -172,7 +205,8 @@ class InfileProvider implements ProviderInterface
         // Create action with Infile-specific configuration
         $action = new CancelAction(
             $providerConfig['base_url'],
-            $providerConfig['cancel_url']
+            $providerConfig['cancel_url'],
+            $this->getClientConfig()
         );
         
         // Set XML body and headers for XML content
@@ -232,13 +266,13 @@ class InfileProvider implements ProviderInterface
         // Create action with Infile-specific configuration
         $action = new StatusAction(
             $providerConfig['base_url'],
-            $providerConfig['status_url'] ?? 'consultarEstatus'
+            $providerConfig['status_url'] ?? 'consultarEstatus',
+            $this->getClientConfig()
         );
         
-        // For GET requests, append the UUID to the URL
-        $statusUrl = $action->url() . '?uuid=' . urlencode($uuid);
-        
-        // Set the URL and headers
+        // For GET requests, the UUID travels in the URL
+        $action->setUuid($uuid);
+
         $action->setHeaders($this->getCommonHeaders());
         
         // Execute the request and get raw response

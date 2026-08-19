@@ -22,7 +22,9 @@ it('calculates IVA correctly for an item', function () {
         'Servicio de prueba', // description
         100,            // price
         1,              // quantity
-        0               // discount
+        0,              // discount
+        [],             // taxes
+        100             // total
     );
     
     // Verify that it has no taxes initially
@@ -50,8 +52,8 @@ it('calculates taxes for a collection of items', function () {
     $calculator = new GeneralTaxCalculator();
     
     // Create two items without taxes
-    $item1 = new FelItem(1, 'S', 100.0, 'UND', 'Servicio 1', 100, 1, 0);
-    $item2 = new FelItem(2, 'S', 200.0, 'UND', 'Servicio 2', 200, 1, 0);
+    $item1 = new FelItem(1, 'S', 100.0, 'UND', 'Servicio 1', 100, 1, 0, [], 100);
+    $item2 = new FelItem(2, 'S', 200.0, 'UND', 'Servicio 2', 200, 1, 0, [], 200);
     
     // Create a collection with the items
     $items = new FelItems([$item1, $item2]);
@@ -79,7 +81,7 @@ it('skips IVA for export invoices', function () {
     $calculator = new GeneralTaxCalculator();
     
     // Create an item without taxes
-    $item = new FelItem(1, 'S', 100.0, 'UND', 'Servicio de exportación', 100, 1, 0);
+    $item = new FelItem(1, 'S', 100.0, 'UND', 'Servicio de exportación', 100, 1, 0, [], 100);
     
     // Calculate taxes for the item with export document type
     $calculator->calculateItemTaxes($item, DocumentTypeEnum::EXPORT_INVOICE, new FelPhrases());

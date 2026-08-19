@@ -111,9 +111,10 @@ class XmlDocumentBuilder implements XmlBuilder
 
                     if (is_array($value)) {
                         $this->writeChildren($xw, $value);
-                    } elseif (is_string($value) && $this->isXmlString($value)) {
-                        xmlwriter_write_raw($xw, $value);
                     } else {
+                        // Los valores con clave nombrada siempre son texto y deben
+                        // escaparse; el XML pre-serializado entra como string de
+                        // nivel superior o en arrays con claves numéricas.
                         xmlwriter_text($xw, (string)$value);
                     }
 
@@ -125,17 +126,5 @@ class XmlDocumentBuilder implements XmlBuilder
                 }
             }
         }
-    }
-
-    /**
-     * Validate if a string is a valid XML string
-     *
-     * @param string $string
-     * @return bool
-     */
-    protected function isXmlString(string $string): bool
-    {
-        return preg_match('/<\w+(\s+[^>]*)?>(.*?)<\/\w+>/', $string) === 1 ||
-            preg_match('/<\w+(\s+[^>]*)?\/?>/', $string) === 1;
     }
 }

@@ -9,11 +9,18 @@ class StatusAction extends BaseFelAction
 {
     /**
      * Status endpoint path
-     * 
+     *
      * @var string
      */
     protected string $statusEndpoint;
-    
+
+    /**
+     * UUID of the document to check
+     *
+     * @var string|null
+     */
+    protected ?string $uuid = null;
+
     /**
      * Constructor
      * 
@@ -32,12 +39,28 @@ class StatusAction extends BaseFelAction
     }
     
     /**
-     * Get the URL for the status endpoint
-     * 
+     * Set the UUID of the document to check
+     *
+     * @param string $uuid
+     * @return self
+     */
+    public function setUuid(string $uuid): self
+    {
+        $this->uuid = $uuid;
+        return $this;
+    }
+
+    /**
+     * Get the URL for the status endpoint, including the UUID when set
+     *
      * @return string
      */
     public function url(): string
     {
+        if ($this->uuid !== null) {
+            return $this->statusEndpoint . '?uuid=' . urlencode($this->uuid);
+        }
+
         // Return the endpoint path relative to the base URL
         return $this->statusEndpoint;
     }
