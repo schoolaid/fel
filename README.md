@@ -5,6 +5,13 @@
 
 Este paquete proporciona una implementación completa para la Factura Electrónica en Línea (FEL) de Guatemala, conforme a los requerimientos de la SAT. Permite generar, certificar y gestionar facturas electrónicas de manera sencilla en aplicaciones Laravel.
 
+## Documentación
+
+La documentación completa (en inglés) vive en [`docs/`](docs/README.md):
+guías de uso (instalación, [credenciales INFILE](docs/guide/infile-credentials.md),
+operaciones, impuestos), [arquitectura](docs/architecture.md),
+[pruebas](docs/testing.md) y los documentos de seguimiento del paquete.
+
 ## Características
 
 - Generación de XML para documentos fiscales electrónicos
@@ -50,10 +57,25 @@ Para utilizar este paquete necesitas credenciales del proveedor certificador INF
    - Autorización de la SAT para emitir facturas electrónicas
 
 3. **Credenciales que Recibirás**
-   - **Usuario (username)**: Usuario para autenticación
-   - **Llave API (API Key)**: Clave para firma de documentos
-   - **Llave de Firma (Signature Key)**: Clave adicional de seguridad
+   - **Usuario (username)**: Usuario/prefijo para autenticación (se envía como `UsuarioFirma` y `UsuarioApi`)
+   - **Llave de Firma**: llave del firmador, usada para firmar documentos (INFILE la recibe como `llaveFirma`)
+   - **Llave API**: llave del API REST (INFILE la recibe como `llaveApi` y `llave`)
    - **NIT Emisor**: Número de Identificación Tributaria de tu empresa
+
+> ⚠️ **Nombres invertidos:** por compatibilidad histórica, en este paquete el
+> parámetro `apiKey`/`api_key` es el que viaja como `llaveFirma`, y
+> `signatureKey`/`signature_key` es el que viaja como `llaveApi`/`llave`.
+> Es decir: **pon la Llave de Firma en `api_key` y la Llave API en
+> `signature_key`**. No se "corrige" el cruce porque los consumidores
+> existentes del paquete ya compensan; el mapeo está fijado por
+> `InfileHeadersTest`.
+>
+> Para no depender de los nombres invertidos, usa los **nombres veraces**:
+> el constructor `FelConfig::forInfile($username, $llaveFirma, $llaveApi)`,
+> las variables de entorno `FEL_LLAVE_FIRMA` / `FEL_LLAVE_API`, y los
+> accesores `getLlaveFirma()` / `setLlaveFirma()` y `getLlaveApi()` /
+> `setLlaveApi()`. Solo el constructor histórico (`apiKey:` / `signatureKey:`)
+> conserva los nombres invertidos, por compatibilidad con las apps existentes.
 
 ### Configuración en Laravel
 
@@ -82,8 +104,9 @@ FEL_CANCEL_URL=https://certificador.feel.com.gt/fel/procesounificado/transaccion
 
 # Credenciales de INFILE
 FEL_USERNAME=tu_usuario_infile
-FEL_API_KEY=tu_llave_api
-FEL_PASSWORD=tu_llave_firma
+FEL_LLAVE_FIRMA=tu_llave_de_firma  # llave del firmador (header llaveFirma)
+FEL_LLAVE_API=tu_llave_api         # llave del API REST (headers llaveApi y llave)
+# Nombres legados aún soportados: FEL_KEY (llave de firma) y FEL_PASSWORD (llave del API)
 
 # NIT del Emisor (opcional, pero recomendado)
 FEL_IDENTIFIER=12345678
@@ -99,18 +122,17 @@ FEL_VERIFY_SSL=true
 return [
     'provider' => env('FEL_PROVIDER', 'infile'),
     'username' => env('FEL_USERNAME'),
-    'api_key' => env('FEL_API_KEY'),
-    'password' => env('FEL_PASSWORD'),
-    'identifier' => env('FEL_IDENTIFIER'), // Tu NIT
+    'api_key' => env('FEL_LLAVE_FIRMA', env('FEL_KEY')),          // llave del firmador (viaja como llaveFirma)
+    'signature_key' => env('FEL_LLAVE_API', env('FEL_PASSWORD')), // llave del API REST (viaja como llaveApi)
 
-    'providers' => [
-        'infile' => [
-            'base_url' => env('FEL_BASE_URL', 'https://certificador.feel.com.gt/fel/procesounificado/transaccion/v2/xml'),
-            'certify_url' => env('FEL_CERTIFY_URL'),
-            'cancel_url' => env('FEL_CANCEL_URL'),
-            'timeout' => env('FEL_TIMEOUT', 30),
-            'verify_ssl' => env('FEL_VERIFY_SSL', true),
-        ],
+    'provider_config' => [
+        'base_url' => env('FEL_BASE_URL', 'https://certificador.feel.com.gt/fel/procesounificado/transaccion/v2/xml'),
+        'certify_url' => env('FEL_CERTIFY_URL'),
+        'status_url' => env('FEL_STATUS_URL'),
+        'cancel_url' => env('FEL_CANCEL_URL'),
+        'timeout' => env('FEL_TIMEOUT', 30),
+        'verify_ssl' => env('FEL_VERIFY_SSL', true),
+        'identifier' => env('FEL_IDENTIFIER'), // Tu NIT
     ],
 ];
 ```
@@ -122,12 +144,25 @@ Puedes pasar las credenciales directamente sin usar `.env` ni archivos de config
 ```php
 use Schoolaid\Fel\Config\FelConfig;
 
-// Opción 3A: Constructor directo
+// Opción 3A (recomendada): constructor con nombres veraces
+$config = FelConfig::forInfile(
+    username: 'tu_usuario_infile',
+    llaveFirma: 'tu_llave_de_firma',  // llave del firmador
+    llaveApi: 'tu_llave_api',         // llave del API REST
+    providerConfig: [
+        'base_url' => 'https://certificador.feel.com.gt/fel/procesounificado/transaccion/v2/xml',
+        'certify_url' => 'https://certificador.feel.com.gt/fel/procesounificado/transaccion/v2/xml',
+        'cancel_url' => 'https://certificador.feel.com.gt/fel/procesounificado/transaccion/v2/xml',
+        'identifier' => '12345678'  // Tu NIT (opcional)
+    ]
+);
+
+// Constructor histórico (nombres invertidos, ver nota de credenciales)
 $config = new FelConfig(
     provider: 'infile',
     username: 'tu_usuario_infile',
-    apiKey: 'tu_llave_api',
-    signatureKey: 'tu_llave_firma',
+    apiKey: 'tu_llave_de_firma',   // viaja como llaveFirma
+    signatureKey: 'tu_llave_api',  // viaja como llaveApi
     providerConfig: [
         'base_url' => 'https://certificador.feel.com.gt/fel/procesounificado/transaccion/v2/xml',
         'certify_url' => 'https://certificador.feel.com.gt/fel/procesounificado/transaccion/v2/xml',
@@ -142,8 +177,8 @@ $config = new FelConfig(
 $credenciales = [
     'provider' => 'infile',
     'username' => 'tu_usuario_infile',
-    'api_key' => 'tu_llave_api',
-    'signature_key' => 'tu_llave_firma',
+    'api_key' => 'tu_llave_de_firma',   // viaja como llaveFirma
+    'signature_key' => 'tu_llave_api',  // viaja como llaveApi
     'provider_config' => [
         'base_url' => 'https://certificador.feel.com.gt/fel/procesounificado/transaccion/v2/xml',
         'certify_url' => 'https://certificador.feel.com.gt/fel/procesounificado/transaccion/v2/xml',
@@ -160,8 +195,8 @@ $config = FelConfig::fromArray($credenciales);
 $config = new FelConfig();
 $config->setProvider('infile')
     ->setUsername('tu_usuario_infile')
-    ->setApiKey('tu_llave_api')
-    ->setSignatureKey('tu_llave_firma')
+    ->setLlaveFirma('tu_llave_de_firma')  // llave del firmador
+    ->setLlaveApi('tu_llave_api')         // llave del API REST
     ->setIdentifier('12345678')
     ->setProviderConfig([
         'base_url' => 'https://certificador.feel.com.gt/fel/procesounificado/transaccion/v2/xml',
@@ -251,8 +286,8 @@ FEL_CANCEL_URL=https://certificador-sandbox.feel.com.gt/fel/procesounificado/tra
 
 # Credenciales de Prueba (proporcionadas por INFILE)
 FEL_USERNAME=usuario_prueba
-FEL_API_KEY=llave_prueba
-FEL_PASSWORD=firma_prueba
+FEL_LLAVE_FIRMA=llave_firma_prueba
+FEL_LLAVE_API=llave_api_prueba
 ```
 
 ### Verificación de Configuración
@@ -590,37 +625,76 @@ $invoice = new Invoice(
 );
 ```
 
-### Nota de Crédito (NCRE)
+### Nota de Crédito (NCRE) y Nota de Débito (NDEB)
 
-Para anular o reducir el monto de una factura previamente emitida:
+Para ajustar (devolución, descuento, corrección) una factura ya certificada.
+La SAT exige que toda NCRE/NDEB incluya el complemento **ReferenciasNota** con
+los datos del documento origen; el paquete lo genera a partir de un
+`FelReferenceNote` (sin él, `generateXml()` lanza `XmlGenerationException`):
 
 ```php
 use Schoolaid\Fel\Enums\DocumentTypeEnum;
+use Schoolaid\Fel\Models\FelReferenceNote;
 
-// Referencia a la factura original
-$addendas = [
-    new FelAddenda(
-        'http://www.sat.gob.gt/face2/ComplementoFacturaEspecial/0.1.0',
-        'FacturaOriginal',
-        'UUID: 12345678-1234-1234-1234-123456789012'
-    ),
-    new FelAddenda(
-        'http://www.sat.gob.gt/face2/ComplementoFacturaEspecial/0.1.0',
-        'Motivo',
-        'Devolución de mercadería'
-    )
-];
+// Referencia a la factura original (obligatoria). Los cinco datos vienen del
+// CertificationResponse con que se certificó el DTE origen: getUuid(),
+// getSeries() y getNumber() (serie y número NO se derivan del UUID; el
+// sandbox de INFILE, por ejemplo, emite la serie "**PRUEBAS**").
+$reference = new FelReferenceNote(
+    '12345678-1234-1234-1234-123456789012', // UUID (autorización) del DTE origen
+    '2025-03-15',                           // Fecha de emisión del DTE origen
+    'Devolución de mercadería',             // Motivo del ajuste
+    'A1B2C3D4',                             // Serie del DTE origen (getSeries)
+    '1234567890'                            // Número del DTE origen (getNumber)
+);
 
 $invoice = new Invoice(
-    DocumentTypeEnum::CREDIT_NOTE,  // NCRE
+    DocumentTypeEnum::CREDIT_NOTE,  // NCRE (para NDEB usa DEBIT_NOTE)
     now()->format('Y-m-d\TH:i:s'),
-    CurrencyEnum::QUETZAL,
-    $issuer,
-    $receiver,
+    CurrencyEnum::QUETZAL,          // Debe ser la misma moneda del DTE origen
+    $issuer,                        // Mismo NIT emisor que el DTE origen
+    $receiver,                      // Mismo receptor que el DTE origen
     $phrases,
-    $items,  // Items a acreditar (con montos negativos o positivos según SAT)
-    $totals,
-    $addendas
+    $items,                         // Items a acreditar (montos positivos)
+    $totals
+);
+$invoice->setReferenceNote($reference);
+```
+
+Esto emite dentro de `dte:DatosEmision`, después de `dte:Totales`:
+
+```xml
+<dte:Complementos>
+    <dte:Complemento IDComplemento="1" NombreComplemento="NOTA CREDITO"
+                     URIComplemento="http://www.sat.gob.gt/face2/ComplementoReferenciaNota/0.1.0">
+        <cno:ReferenciasNota xmlns:cno="http://www.sat.gob.gt/face2/ComplementoReferenciaNota/0.1.0"
+            Version="1"
+            NumeroAutorizacionDocumentoOrigen="12345678-1234-1234-1234-123456789012"
+            SerieDocumentoOrigen="A1B2C3D4"
+            NumeroDocumentoOrigen="1234567890"
+            FechaEmisionDocumentoOrigen="2025-03-15"
+            MotivoAjuste="Devolución de mercadería"/>
+    </dte:Complemento>
+</dte:Complementos>
+```
+
+Reglas SAT a tener en cuenta (las valida el certificador, rechazo si no se
+cumplen): el DTE origen debe existir, estar vigente y ser FACT o FCAM; NIT
+emisor, receptor, fecha y moneda deben coincidir con el origen; cada nota
+referencia **un solo** DTE; y un DTE con nota vigente asociada ya no puede
+anularse. La Ley del IVA da 2 meses desde la factura para que el ajuste
+conserve el derecho a crédito fiscal (pasado el plazo la SAT certifica igual).
+
+Para referenciar una factura **en papel del régimen antiguo** (pre-FEL):
+
+```php
+$reference = new FelReferenceNote(
+    '1364585227',        // Número de resolución de autorización
+    '2018-05-20',
+    'Anulación parcial',
+    '5AAE0F7A',          // Serie del documento origen
+    '1364585227',        // Número del documento origen
+    oldRegime: true      // Emite RegimenAntiguo="Antiguo"
 );
 ```
 
@@ -807,8 +881,12 @@ Error: Usuario o contraseña incorrectos
 
 **Solución:** Verifica que tus credenciales en `.env` sean correctas:
 - `FEL_USERNAME`
-- `FEL_API_KEY`
-- `FEL_PASSWORD`
+- `FEL_LLAVE_FIRMA` (llave del firmador — viaja como `llaveFirma`)
+- `FEL_LLAVE_API` (llave del API REST — viaja como `llaveApi`)
+
+Si usas los nombres legados, recuerda que están invertidos: la llave de firma
+va en `FEL_KEY` y la llave del API en `FEL_PASSWORD` (ver la nota en
+"Configuración de Credenciales INFILE").
 
 ### Error de Validación SAT
 
