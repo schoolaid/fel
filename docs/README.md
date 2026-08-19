@@ -35,6 +35,7 @@ package evolves:
 | [Review findings](seguimiento/hallazgos-revision.md) | Bug tracking and backlog from the 2026-08-18 review (all 8 main bugs: resolved) |
 | [Reference invoice](seguimiento/factura-referencia.md) | A real certified DTE, used as a byte-for-byte fixture to validate XML generation |
 | [Research: credit notes](seguimiento/notas-credito-investigacion.md) | SAT rules for NCRE/NDEB and the design of the Complementos support (in development) |
+| [Audit: marketaid billing](seguimiento/auditoria-marketaid-billing.md) | Compatibility verdict and prioritized findings for marketaid's INFILE billing layer (handoff document) |
 
 ## Conventions
 
