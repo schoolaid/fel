@@ -17,6 +17,22 @@ class ComplementsElement implements XmlSerializable
     protected FelReferenceNote $referenceNote;
     protected string $documentType;
 
+    /**
+     * El catálogo de complementos de la SAT (sección 3.1) marca
+     * ReferenciasNota como requerido (código 2) para NCRE y NDEB y prohibido
+     * (código 0) para el resto de tipos: una FACT con el complemento se
+     * rechaza con "El complemento [ReferenciasNota] con prefijo [cno] no es
+     * valido para el tipo de documento [FACT]. (31101)".
+     */
+    public static function appliesTo(string $documentType): bool
+    {
+        return in_array(
+            $documentType,
+            [DocumentTypeEnum::CREDIT_NOTE->value, DocumentTypeEnum::DEBIT_NOTE->value],
+            true
+        );
+    }
+
     public function __construct(FelReferenceNote $referenceNote, string $documentType)
     {
         $this->builder = new XmlDocumentBuilder();

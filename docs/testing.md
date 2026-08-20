@@ -29,11 +29,33 @@ are skipped.
   username prefix — INFILE reports the real NIT in `descripcion_errores` when
   it doesn't match). Configure it with `FEL_ISSUER_NIT` in the `.env`; the
   tests read it via `felTestIssuerNit()`.
+- **Issuer data**: the rest of the issuer comes from the `FEL_ISSUER_*`
+  variables (see `.env.example`), which mirror a `bill_issuers` row in the
+  consuming app: `FEL_ISSUER_NAME`, `FEL_ISSUER_COMMERCIAL_NAME`,
+  `FEL_ISSUER_EMAIL`, `FEL_ISSUER_OFFICE_CODE`, `FEL_ISSUER_IVA_AFFILIATION`,
+  `FEL_ISSUER_ADDRESS`, `FEL_ISSUER_POSTAL_CODE`, `FEL_ISSUER_CITY`,
+  `FEL_ISSUER_STATE`, `FEL_ISSUER_COUNTRY`, `FEL_ISSUER_PHRASE_TYPE`,
+  `FEL_ISSUER_PHRASE_STAGE`, `FEL_ISSUER_PERSON_TYPE`. The tests build the
+  issuer with `felTestIssuer()` / `felTestIssuerPhrases()` (in `tests/Pest.php`)
+  so no taxpayer data is baked into the test files.
+- **Emission date**: `felEmissionDateTime()` stamps the DTE in
+  `America/Guatemala` via `FelDateTime`, the same clock the package uses when
+  no date is given. Testbench runs in UTC, so a test that builds its own date
+  with `now()` would date the DTE six hours ahead.
+- **Credential mapping** (INFILE ↔ a `bill_issuers` row): `infile_user` →
+  `FEL_USERNAME`, `infile_key` → `FEL_LLAVE_FIRMA` (header `llaveFirma`),
+  `infile_password` → `FEL_LLAVE_API` (headers `llave` / `llaveApi`).
 - **Per-document logs**: every live certification/cancellation leaves a directory in
   `tests/logs/` (git-ignored) with `meta.json` (uuid, series, number, errors,
   and the full raw response), `request.xml`, and `certified.xml`, via
   `felLogDocument()`. They serve as evidence and to diagnose INFILE/SAT
   rejections.
+- **NCRE/NDEB scenario matrix**: `tests/Unit/CreditNoteScenariosTest.php`
+  certifies an origin FACT and then runs seven scenarios against it (partial
+  credit note, a second credit note for the rest, debit note, and negative
+  controls: non-existent origin UUID, mismatched receiver, and the complement
+  on a FACT). It writes `tests/logs/RESUMEN-<date>.md` with the outcome of
+  every document.
 - **RDON (donation receipt)**: the live test is permanently skipped — SAT
   validates against its registry and the demo NIT (GEN regime) cannot issue
   RDON (rules 2541/2543/25301/25401). Re-enabling it requires credentials

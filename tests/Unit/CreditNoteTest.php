@@ -187,3 +187,15 @@ it('does not emit Complementos for a regular invoice', function () {
     expect($xml)->toContain('Tipo="FACT"')
         ->and($xml)->not->toContain('<dte:Complementos>');
 });
+
+it('rejects a reference note on a document type that must not carry the complement', function () {
+    // Catálogo de complementos (3.1): ReferenciasNota es código 0 (prohibido)
+    // para todo lo que no sea NCRE/NDEB. Verificado contra el sandbox de
+    // INFILE: una FACT con el complemento se rechaza con
+    // "El complemento [ReferenciasNota] con prefijo [cno] no es valido para
+    // el tipo de documento [FACT]. (31101)". Debe fallar antes de la red.
+    $invoice = makeNoteInvoice(DocumentTypeEnum::LOCAL_INVOICE);
+    $invoice->setReferenceNote(makeReferenceNote());
+
+    FelGenerate::make($invoice)->generateXml();
+})->throws(XmlGenerationException::class);

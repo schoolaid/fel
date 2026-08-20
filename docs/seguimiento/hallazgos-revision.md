@@ -178,6 +178,87 @@ Contexto completo en `notas-credito-investigacion.md`. Para revisión:
 
 ---
 
+## Hallazgos nuevos — revisión en vivo de notas de crédito (2026-08-19)
+
+Corrida de la matriz de escenarios `tests/Unit/CreditNoteScenariosTest.php`
+contra el sandbox de INFILE (FACT origen + NCRE parcial + segunda NCRE + NDEB
++ tres controles negativos). Logs en `tests/logs/`.
+
+| # | Hallazgo | Estado |
+|---|----------|--------|
+| 11 | El complemento `ReferenciasNota` se emitía en **cualquier** tipo de documento con `referenceNote`, no solo NCRE/NDEB. La SAT lo prohíbe (catálogo 3.1, código 0) y rechaza el DTE. | ✅ Resuelto (2026-08-19) |
+| 12 | Al rechazar, `getErrors()` devolvía solo el genérico «Existen errores en la validacion del XML»; el detalle real de la SAT (`descripcion_errores`) se descartaba. | ✅ Resuelto (2026-08-19) |
+| 13 | La fecha por defecto de `Invoice` y `Cancellation` usaba la zona del runtime; en UTC el DTE salía 6 horas adelantado. | ✅ Resuelto (2026-08-19) |
+
+### 11. Complemento ReferenciasNota fuera de NCRE/NDEB — ✅ Resuelto (2026-08-19)
+
+- **Dónde:** `EmissionDataElement::__construct()` construía el
+  `ComplementsElement` con solo mirar `hasReferenceNote()`, sin mirar el tipo;
+  y `ComplementsElement::getComplementName()` devolvía `NOTA CREDITO` para
+  todo lo que no fuera NDEB (incluida una FACT).
+- **Qué pasaba:** una FACT (o FEXP, RDON…) con `setReferenceNote()` salía con
+  el complemento y INFILE la rechazaba. Verificado en vivo:
+  `FEL-GUI-83 | 3 | 3.1 | No. 31101 | Error - El complemento
+  [ReferenciasNota] con prefijo [cno] no es valido para el tipo de documento
+  [FACT]. (31101)` y `No. 2 | Error - Existe uno o mas complementos que no
+  deben incluirse en el DTE. (3112)`.
+- **Fix:** `ComplementsElement::appliesTo(string $documentType)` (solo NCRE y
+  NDEB); `EmissionDataElement` solo lo emite si aplica, y
+  `AbstractInvoiceGenerator::guardReferenceNoteScope()` lanza
+  `XmlGenerationException` antes de gastar la llamada al certificador.
+- **Cobertura:** `tests/Unit/CreditNoteTest.php` («rejects a reference note on
+  a document type that must not carry the complement») + escenario 7 de la
+  matriz en vivo. Verificado que FACT/FEXP/RDON se generan **byte a byte
+  idénticos** antes y después del fix.
+
+### 12. `getErrors()` descartaba el detalle de la SAT — ✅ Resuelto (2026-08-19)
+
+- **Dónde:** `InfileProvider::certify()`, `cancel()` y `checkStatus()`; los
+  tres leían solo `descripcion` / `mensaje`.
+- **Qué pasaba:** INFILE responde siempre el mismo `descripcion` genérico
+  («Existen errores en la validacion del XML. Por favor revisa e intenta de
+  nuevo.») y manda el detalle en `descripcion_errores` (lista de objetos con
+  `mensaje_error`). La app consumidora no podía saber por qué se rechazó el
+  DTE salvo hurgando en `getRawResponse()`.
+- **Fix:** `InfileProvider::extractErrors()` devuelve un `mensaje_error` por
+  cada entrada de `descripcion_errores` (acepta strings sueltos), y cae a
+  `descripcion` / `mensaje` / el texto por defecto cuando no hay detalle.
+- **Cobertura:** `tests/Unit/InfileErrorMappingTest.php` (4 tests con el
+  payload real del sandbox) + la matriz en vivo, donde el rechazo por receptor
+  distinto ahora llega como `FEL-GUI-51 | 3.5 | 3.5.1 | No. 5 | Error - El
+  valor de la casilla ID del Receptor no coincide con el registrado en el
+  Documento Origen.`
+
+### Comportamiento confirmado contra el sandbox (no son bugs)
+
+- **Varias notas sobre la misma factura**: la SAT acepta una NCRE parcial y
+  después otra por el saldo (Q25 + Q75 sobre una FACT de Q100).
+- **NDEB**: certifica con el mismo complemento, cambiando solo `Tipo` y
+  `NombreComplemento`. Primera NDEB verificada en vivo.
+- **Validaciones 3.5.1 de la SAT**: rechaza la nota si el UUID origen no
+  existe (No. 1) o si el ID del receptor no coincide con el del origen (No. 5).
+
+### 13. Fecha por defecto en la zona del runtime — ✅ Resuelto (2026-08-19)
+
+- **Dónde:** `Invoice::__construct()` (`(new DateTime())->format('c')`) y
+  `Cancellation::__construct()` (`(new \DateTime())->format('Y-m-d\TH:i:s')`).
+- **Qué pasaba:** ambos sellaban la fecha con la zona del runtime. Con
+  `APP_TIMEZONE=UTC` el DTE salía 6 horas adelantado — visible en los logs de
+  la primera corrida: `FechaHoraEmision="2026-08-19T17:14:22"` a las 11:14 de
+  Guatemala. Un documento emitido después de las 18:00 locales cambiaba de día
+  (y de mes o de año en el peor caso), con lo que eso implica para el período
+  fiscal y para el `FechaEmisionDocumentoOrigen` de una nota de crédito, que
+  debe coincidir con lo registrado en SAT.
+- **Fix:** `Schoolaid\Fel\Support\FelDateTime` (constante `TIMEZONE`,
+  `timezone()`, `now($format)`), usado por ambos modelos. Una fecha explícita
+  se sigue pasando tal cual, así que no cambia ningún DTE existente
+  (verificado byte a byte en FACT/FEXP/RDON).
+- **Cobertura:** `tests/Unit/EmissionDateTimezoneTest.php` — factura y
+  anulación con el runtime forzado a UTC, más el paso limpio de una fecha
+  explícita.
+
+---
+
 ## Backlog de hallazgos menores
 
 **Tests**
@@ -197,8 +278,9 @@ Contexto completo en `notas-credito-investigacion.md`. Para revisión:
   con INFILE antes de emitir FPEQ.
 - `FelTax`: `taxAmount = amount − taxableAmount` sin `round()`; las sumas de
   totales tampoco redondean.
-- La fecha de emisión por defecto usa la zona horaria del servidor
-  (`Invoice.php`); forzar `America/Guatemala` para el `-06:00`.
+- ~~La fecha de emisión por defecto usa la zona horaria del servidor
+  (`Invoice.php`); forzar `America/Guatemala` para el `-06:00`.~~ Resuelto
+  2026-08-19 (#13, `Support\FelDateTime`).
 - `AdendaElement`: dos adendas con el mismo `name` se sobreescriben en
   silencio; la propiedad `namespace` de `FelAddenda` nunca se usa.
 
@@ -206,8 +288,13 @@ Contexto completo en `notas-credito-investigacion.md`. Para revisión:
 - `src/Certification/Providers/ProviderInterface.php`: namespace equivocado
   (no cumple PSR-4) y referencia clases inexistentes. Borrar.
 - Sin uso: `Credentials`, `CancellationGenerator::formatDateTime()`.
-- README: usa `getSerial()` (el método real es `getSeries()`) y un ejemplo de
-  `Cancellation` con argumentos nombrados inexistentes (`uuid:`, `dateTime:`).
+- README: ~~usa `getSerial()`~~ (corregido 2026-08-19; el método real es
+  `getSeries()`) y un ejemplo de `Cancellation` con argumentos nombrados
+  inexistentes (`uuid:`, `dateTime:`).
+- `getCertifiedXml()` devuelve el `xml_certificado` de INFILE **tal cual, y
+  viene en base64**: quien lo guarde como `.xml` guarda base64. Documentado en
+  README y `docs/guide/operations.md` (2026-08-19); evaluar si el paquete
+  debería decodificarlo (rompería a quien ya lo decodifica por su cuenta).
 - `FelServiceProvider` no hace `mergeConfigFrom` → `config('fel')` es null
   hasta publicar el config.
 - `composer.lock` desactualizado respecto a `composer.json`.

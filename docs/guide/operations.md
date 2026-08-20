@@ -42,24 +42,40 @@ if ($response->isSuccessful()) {
     $response->getSeries();             // series (note: getSeries, not getSerial)
     $response->getNumber();
     $response->getCertificationDate();  // may be null
-    $response->getCertifiedXml();
+    $response->getCertifiedXml();       // base64! decode before saving as .xml
 } else {
-    $response->getErrors();             // array of INFILE messages
+    $response->getErrors();             // one entry per SAT validation error
 }
 ```
+
+`getCertifiedXml()` returns INFILE's `xml_certificado` **verbatim, and INFILE
+sends it base64-encoded** — run it through `base64_decode()` before writing it
+to an `.xml` file. On failure, `getErrors()` carries one entry per SAT
+validation (from `descripcion_errores`), not the generic "Existen errores en
+la validacion del XML".
 
 Taxes and totals are computed automatically at generation time — rules in
 [Taxes and totals](taxes-and-totals.md).
 
 ### Emission dates
 
-If you omit `emissionDateTime`, `now()` is used **with the server's
-timezone**. SAT expects Guatemala time (`-06:00`); on UTC servers pass the
-date explicitly with `America/Guatemala`:
+SAT dates every DTE in Guatemala time (`-06:00`, no DST). If you omit
+`emissionDateTime`, the package stamps it in `America/Guatemala` regardless of
+the runtime timezone — so a UTC container no longer dates a 19:00 invoice on
+the next day. Same for `Cancellation`'s `FechaHoraAnulacion`.
+
+The clock lives in `Schoolaid\Fel\Support\FelDateTime`, which you can reuse
+when you build the date yourself:
 
 ```php
-now()->setTimezone('America/Guatemala')->format('Y-m-d\TH:i:sP')
+use Schoolaid\Fel\Support\FelDateTime;
+
+FelDateTime::now();                    // 2026-08-19T11:26:54-06:00
+FelDateTime::now('Y-m-d\TH:i:s');      // 2026-08-19T11:26:54 (no offset)
+FelDateTime::TIMEZONE;                 // 'America/Guatemala'
 ```
+
+An explicit `emissionDateTime` is always passed through untouched.
 
 ### Document types
 
@@ -69,7 +85,7 @@ now()->setTimezone('America/Guatemala')->format('Y-m-d\TH:i:sP')
 | `DONATION_RECEIPT` | RDON | ✅ Dedicated generator, no taxes |
 | `SPECIAL_INVOICE` | FESP | Generates with VAT (general generator) |
 | `EXCHANGE_INVOICE`, `RECEIPT`, etc. | FCAM, RECI… | Fall through to the general generator; no specific treatment |
-| `CREDIT_NOTE`, `DEBIT_NOTE` | NCRE, NDEB | 🔧 In development (`ReferenciasNota` complement) — see [research](../seguimiento/notas-credito-investigacion.md) |
+| `CREDIT_NOTE`, `DEBIT_NOTE` | NCRE, NDEB | ✅ `ReferenciasNota` complement, both verified live against the INFILE sandbox — see [research](../seguimiento/notas-credito-investigacion.md) |
 | `EXPORT_INVOICE` | "FEXP" | ⚠️ Not a SAT catalog type (exports = FACT with `Exp="SI"` + complement); pending review |
 | `SMALL_TAXPAYER_INVOICE` | FPEQ | ⚠️ Generated without the VAT block; verify with INFILE (SAT usually requires exempt VAT, code 2) |
 
@@ -78,8 +94,9 @@ now()->setTimezone('America/Guatemala')->format('Y-m-d\TH:i:sP')
 `FelAddenda(namespace, name, value)` → `<dte:Adenda><Name>value</Name>`.
 Caveats: the `namespace` is **not emitted** (it's ignored), and two addendas
 with the same `name` silently overwrite each other. Addendas are **not** a
-substitute for fiscal complements (e.g. credit-note references) — those
-require `dte:Complementos` (in development).
+substitute for fiscal complements (e.g. credit-note references) — those go in
+`dte:Complementos`, which the package emits from `Invoice::setReferenceNote()`
+for NCRE/NDEB only.
 
 ## Cancellation (anulación)
 
