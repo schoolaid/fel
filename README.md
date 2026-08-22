@@ -395,6 +395,10 @@ $invoice = new Invoice(
     new FelTotals(grandTotal: 100.0)
 );
 
+// Si omites la fecha, el paquete la sella en hora de Guatemala (-06:00),
+// no en la zona del runtime: `new Invoice(DocumentTypeEnum::LOCAL_INVOICE)`.
+// El reloj está en Schoolaid\Fel\Support\FelDateTime si lo necesitas aparte.
+
 // 3. Certificar usando la configuración directa
 $certify = new FelCertify($invoice, $config);
 $response = $certify->execute();
@@ -537,10 +541,12 @@ $response = $certify->execute();
 // Procesar respuesta
 if ($response->isSuccessful()) {
     $uuid = $response->getUuid();
-    $serie = $response->getSerial();
+    $serie = $response->getSeries();
     $numero = $response->getNumber();
     $fecha = $response->getCertificationDate();
-    $xmlCertificado = $response->getCertifiedXml();
+    // INFILE devuelve el XML certificado en base64: decodifícalo antes de
+    // guardarlo como archivo .xml.
+    $xmlCertificado = base64_decode($response->getCertifiedXml());
 
     // Guardar los datos en tu base de datos
     echo "Factura certificada exitosamente: {$serie}-{$numero}";
@@ -680,12 +686,38 @@ Esto emite dentro de `dte:DatosEmision`, después de `dte:Totales`:
 </dte:Complementos>
 ```
 
+El complemento **solo** es válido en NCRE y NDEB: si se adjunta un
+`FelReferenceNote` a cualquier otro tipo (FACT, FEXP, RDON…),
+`generateXml()` lanza `XmlGenerationException` antes de llegar al
+certificador, porque la SAT lo rechaza con el error 31101 («El complemento
+[ReferenciasNota] con prefijo [cno] no es valido para el tipo de documento
+[FACT]»).
+
 Reglas SAT a tener en cuenta (las valida el certificador, rechazo si no se
 cumplen): el DTE origen debe existir, estar vigente y ser FACT o FCAM; NIT
 emisor, receptor, fecha y moneda deben coincidir con el origen; cada nota
 referencia **un solo** DTE; y un DTE con nota vigente asociada ya no puede
 anularse. La Ley del IVA da 2 meses desde la factura para que el ajuste
 conserve el derecho a crédito fiscal (pasado el plazo la SAT certifica igual).
+
+Sí se admiten **varias notas sobre la misma factura** (p. ej. una NCRE parcial
+y luego otra por el saldo): verificado contra el sandbox de INFILE.
+
+Cuando la SAT rechaza, `$response->getErrors()` trae el detalle real de cada
+validación (`descripcion_errores` de INFILE), no el genérico «Existen errores
+en la validacion del XML»:
+
+```php
+$response = (new FelCertify($creditNote, $config))->execute();
+
+if (! $response->isSuccessful()) {
+    foreach ($response->getErrors() as $error) {
+        // FEL-GUI-51 | 3.5 | 3.5.1 | No. 5 | Error - El valor de la casilla
+        // ID del Receptor no coincide con el registrado en el Documento Origen.
+        logger()->error($error);
+    }
+}
+```
 
 Para referenciar una factura **en papel del régimen antiguo** (pre-FEL):
 

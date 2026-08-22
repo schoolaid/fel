@@ -6,6 +6,7 @@ use Schoolaid\Fel\Exceptions\XmlGenerationException;
 use Schoolaid\Fel\Models\Invoice;
 use Schoolaid\Fel\Services\Tax\TaxCalculatorFactory;
 use Schoolaid\Fel\Xml\Elements\AdendaElement;
+use Schoolaid\Fel\Xml\Elements\ComplementsElement;
 use Schoolaid\Fel\Xml\Elements\DTEElement;
 use Schoolaid\Fel\Xml\Elements\EmissionDataElement;
 use Schoolaid\Fel\Xml\Elements\GTDocument;
@@ -44,6 +45,8 @@ abstract class AbstractInvoiceGenerator implements InvoiceGeneratorInterface
      */
     public function generateXml(): string
     {
+        $this->guardReferenceNoteScope();
+
         // Calculate taxes according to the document type
         $this->calculateTaxes();
         
@@ -69,6 +72,31 @@ abstract class AbstractInvoiceGenerator implements InvoiceGeneratorInterface
         return $document->asXML();
     }
     
+    /**
+     * El complemento ReferenciasNota solo existe para NCRE y NDEB. Si se
+     * adjunta a otro tipo, la SAT rechaza el DTE (catálogo de complementos
+     * 3.1, error 31101), así que se corta aquí en vez de gastar la llamada
+     * al certificador.
+     *
+     * @throws XmlGenerationException
+     */
+    protected function guardReferenceNoteScope(): void
+    {
+        if (! $this->invoice->hasReferenceNote()) {
+            return;
+        }
+
+        if (ComplementsElement::appliesTo($this->invoice->documentType)) {
+            return;
+        }
+
+        throw new XmlGenerationException(
+            'El complemento ReferenciasNota solo aplica a notas de crédito (NCRE) y débito (NDEB); '
+            . 'el documento es de tipo ' . $this->invoice->documentType . ' y la SAT lo rechaza '
+            . '(catálogo de complementos 3.1, error 31101).'
+        );
+    }
+
     /**
      * Calculate taxes according to the document type
      */

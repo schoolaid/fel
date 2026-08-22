@@ -124,6 +124,49 @@ class InfileProvider implements ProviderInterface
     }
 
     /**
+     * Traduce la respuesta de error de INFILE a una lista de mensajes.
+     *
+     * `descripcion` siempre trae el mismo texto genérico ("Existen errores en
+     * la validacion del XML...") y el detalle real de la SAT viaja en
+     * `descripcion_errores` (lista de objetos con `mensaje_error`). Sin este
+     * detalle la app consumidora no puede saber por qué se rechazó el DTE.
+     *
+     * @param array<string, mixed> $responseData
+     * @return array<int, string>
+     */
+    protected function extractErrors(array $responseData, string $fallback): array
+    {
+        $errors = [];
+
+        foreach ((array) ($responseData['descripcion_errores'] ?? []) as $error) {
+            if (is_array($error)) {
+                $message = $error['mensaje_error'] ?? json_encode($error, JSON_UNESCAPED_UNICODE);
+            } else {
+                $message = $error;
+            }
+
+            $message = trim((string) $message);
+            if ($message !== '') {
+                $errors[] = $message;
+            }
+        }
+
+        if (!empty($errors)) {
+            return $errors;
+        }
+
+        if (!empty($responseData['descripcion'])) {
+            return [(string) $responseData['descripcion']];
+        }
+
+        if (!empty($responseData['mensaje'])) {
+            return [(string) $responseData['mensaje']];
+        }
+
+        return [$fallback];
+    }
+
+    /**
      * Certify an XML document
      *
      * @param string $xml
@@ -171,14 +214,7 @@ class InfileProvider implements ProviderInterface
         }
 
         // Failed certification
-        $errors = [];
-        if (isset($responseData['descripcion'])) {
-            $errors[] = $responseData['descripcion'];
-        } elseif (isset($responseData['mensaje'])) {
-            $errors[] = $responseData['mensaje'];
-        } else {
-            $errors[] = 'Unknown error during certification';
-        }
+        $errors = $this->extractErrors($responseData, 'Unknown error during certification');
         
         return new CertificationResponse(
             false,
@@ -235,14 +271,7 @@ class InfileProvider implements ProviderInterface
         }
         
         // Failed cancellation
-        $errors = [];
-        if (isset($responseData['descripcion'])) {
-            $errors[] = $responseData['descripcion'];
-        } elseif (isset($responseData['mensaje'])) {
-            $errors[] = $responseData['mensaje'];
-        } else {
-            $errors[] = 'Unknown error during cancellation';
-        }
+        $errors = $this->extractErrors($responseData, 'Unknown error during cancellation');
         
         return new CancellationResponse(
             false,
@@ -295,14 +324,7 @@ class InfileProvider implements ProviderInterface
             }
 
             // Failed status check
-            $errors = [];
-            if (isset($responseData['descripcion'])) {
-                $errors[] = $responseData['descripcion'];
-            } elseif (isset($responseData['mensaje'])) {
-                $errors[] = $responseData['mensaje'];
-            } else {
-                $errors[] = 'Unknown error during status check';
-            }
+            $errors = $this->extractErrors($responseData, 'Unknown error during status check');
 
             return new StatusResponse(
                 false,

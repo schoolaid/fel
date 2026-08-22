@@ -34,7 +34,7 @@ class EmissionDataElement implements XmlSerializable
         $this->items = new ItemsElement($invoice->items);
         $this->totals = new TotalsElement($invoice->totals, $invoice->useTaxes);
 
-        if ($invoice->hasReferenceNote()) {
+        if ($invoice->hasReferenceNote() && ComplementsElement::appliesTo($invoice->documentType)) {
             $this->complements = new ComplementsElement(
                 $invoice->getReferenceNote(),
                 $invoice->documentType

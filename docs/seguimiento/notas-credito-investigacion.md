@@ -4,6 +4,16 @@ Investigación del 2026-08-18. Fuentes: SAT «Reglas y Validaciones FEL» v1.7.6
 (julio 2023, portal SAT), ejemplos XML oficiales de certificadores (Megaprint),
 y revisión completa del código del paquete. Certificador objetivo: INFILE.
 
+> **Actualización (2026-08-19):** revisión en vivo con la matriz de
+> escenarios `tests/Unit/CreditNoteScenariosTest.php` (FACT origen, NCRE
+> parcial, segunda NCRE por el saldo, NDEB y tres controles negativos). Salió
+> con dos bugs corregidos —el complemento se emitía en cualquier tipo de
+> documento, y `getErrors()` descartaba el detalle de la SAT— y con tres
+> comportamientos confirmados: **se aceptan varias notas sobre la misma
+> factura**, la **NDEB** funciona igual que la NCRE, y la SAT rechaza por
+> UUID origen inexistente (3.5.1 No. 1) y por receptor distinto al del origen
+> (3.5.1 No. 5). Detalle en `hallazgos-revision.md` (#11 y #12).
+>
 > **Actualización (2026-08-18):** el soporte descrito en la sección 4 ya fue
 > implementado (`FelReferenceNote`, `ComplementsElement`, `CreditNoteGenerator`
 > / `DebitNoteGenerator`, `Invoice::setReferenceNote()`; cobertura en
@@ -177,7 +187,8 @@ tampoco certificaría.
 
 Del backlog menor, dos tocan a NCRE igual que a FACT: la falta de `round()` en
 `FelTax`/sumas (riesgo de rechazo por descuadre de centavos) y la zona horaria
-del servidor en `FechaHoraEmision` (forzar `America/Guatemala`).
+del servidor en `FechaHoraEmision` — esta última resuelta el 2026-08-19: el
+default ya se sella en `America/Guatemala` (`Support\FelDateTime`).
 
 ---
 

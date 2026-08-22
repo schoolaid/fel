@@ -39,6 +39,7 @@ issuance document (`dte:GTDocumento`, namespace 0.2.0, `Version="0.1"`).
 | `src/Services/Tax/` | Per-type tax calculators |
 | `src/Certification/` | Everything HTTP: INFILE provider, actions, responses, exceptions |
 | `src/Config/` | `FelConfig` (credentials + provider_config) |
+| `src/Support/` | `FelDateTime`: the `America/Guatemala` clock every default date uses |
 
 ## XML serializer rules
 
@@ -84,11 +85,14 @@ out for fields SAT requires even when empty.
 | Add another certifier | Implement `Certification\Contracts\ProviderInterface` + a branch in `FelCertificationService::createDefaultProvider()` (only `infile` today) |
 | Add a new DTE node | New Element + hook it into `EmissionDataElement` (children are in fixed order — respect the XSD order) |
 
-## Work in progress
+## Credit and debit notes (NCRE/NDEB)
 
-Real **NCRE/NDEB** support (`dte:Complementos` node + `cno:ReferenciasNota`
-complement): `FelReferenceNote` model, `ComplementsElement`,
-`CreditNoteGenerator`/`DebitNoteGenerator`. Design and SAT rules in
+`dte:Complementos` > `cno:ReferenciasNota`, built from the `FelReferenceNote`
+model by `ComplementsElement` and emitted after `dte:Totales`. The complement
+is **required** for NCRE/NDEB and **forbidden** everywhere else
+(`ComplementsElement::appliesTo()`), so `AbstractInvoiceGenerator` refuses both
+mistakes before the request leaves the process. Verified live against the
+INFILE sandbox — SAT rules and scenario results in
 [the research doc](seguimiento/notas-credito-investigacion.md).
 
 ## Known limitations
@@ -96,4 +100,4 @@ complement): `FelReferenceNote` model, `ComplementsElement`,
 The full state (resolved bugs, XML/SAT backlog, dead code) lives in
 [seguimiento/hallazgos-revision.md](seguimiento/hallazgos-revision.md).
 Highlights: incorrect `schemaLocation` in `GTDocument`, FPEQ without a VAT
-block, missing `round()` calls, server timezone in the default emission date.
+block, missing `round()` calls.

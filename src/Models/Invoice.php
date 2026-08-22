@@ -2,10 +2,9 @@
 
 namespace Schoolaid\Fel\Models;
 
-use DateTimeInterface;
-use DateTime;
 use Schoolaid\Fel\Enums\CurrencyEnum;
 use Schoolaid\Fel\Enums\DocumentTypeEnum;
+use Schoolaid\Fel\Support\FelDateTime;
 
 class Invoice
 {
@@ -44,8 +43,9 @@ class Invoice
             $this->documentType = $documentType ?? DocumentTypeEnum::getDefault()->value;
         }
         
-        // Handle emission date
-        $this->emissionDateTime = $emissionDateTime ?? (new DateTime())->format('c');
+        // Handle emission date. Sin fecha explícita se sella en hora de
+        // Guatemala, no en la zona del runtime (ver FelDateTime).
+        $this->emissionDateTime = $emissionDateTime ?? FelDateTime::now();
         
         // Handle currency code
         if ($currencyCode instanceof CurrencyEnum) {

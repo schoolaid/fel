@@ -3,6 +3,7 @@
 namespace Schoolaid\Fel\Models;
 
 use DateTimeInterface;
+use Schoolaid\Fel\Support\FelDateTime;
 
 /**
  * Model representing cancellation data for a document
@@ -17,7 +18,9 @@ class Cancellation
      * @param string $idReceiver The ID of the receiver
      * @param string $reason The reason for cancellation
      * @param string $documentDateTime The date and time of the document to be cancelled
-     * @param string|null $cancellationDateTime The date and time of cancellation (current time if null)
+     * @param string|null $cancellationDateTime The date and time of cancellation
+     *        (current Guatemala time if null — SAT dates every DTE in
+     *        America/Guatemala, see FelDateTime)
      */
     public function __construct(
         protected string $documentUuid,
@@ -28,7 +31,7 @@ class Cancellation
         protected ?string $cancellationDateTime = null
     ) {
         if (null === $this->cancellationDateTime) {
-            $this->cancellationDateTime = (new \DateTime())->format('Y-m-d\TH:i:s');
+            $this->cancellationDateTime = FelDateTime::now('Y-m-d\TH:i:s');
         }
     }
 
