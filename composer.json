@@ -12,8 +12,8 @@
     "ext-dom": "*"
   },
   "require-dev": {
-    "orchestra/testbench": "^9.13.0",
-    "pestphp/pest": "3.x-dev"
+    "orchestra/testbench": "^10.0",
+    "pestphp/pest": "^3.8"
   },
   "license": "MIT",
   "autoload": {
@@ -28,7 +28,8 @@
       "email": "hsinglic@gmail.com"
     }
   ],
-  "minimum-stability": "dev",
+  "minimum-stability": "stable",
+  "prefer-stable": true,
   "config": {
     "allow-plugins": {
       "pestphp/pest-plugin": true
